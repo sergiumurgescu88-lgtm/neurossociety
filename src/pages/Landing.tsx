@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { formatCurrencyPlain, formatNumber } from "@/lib/format";
+import logo from "@/assets/logo.png";
 
 const SUPABASE_URL = "https://lgrllhsfgvnngtmlwwug.supabase.co";
 const SUPABASE_KEY = "sb_publishable_KtQkZ2_nx8rR65ypG9ZWSw_AjVWWX-N";
