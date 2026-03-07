@@ -75,12 +75,12 @@ export default function LandingPage() {
 
       {/* Nav */}
       <nav className="relative z-10 flex items-center justify-between px-6 lg:px-12 py-6 max-w-7xl mx-auto">
-        <div className="flex items-center gap-2">
+        <Link to="/dashboard" className="flex items-center gap-2">
           <span className="text-2xl">🤖</span>
           <span className="font-heading text-xl font-bold tracking-tight">
             Neuro<span className="text-accent">SS</span>ociety
           </span>
-        </div>
+        </Link>
         <div className="flex items-center gap-3">
           <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors hidden sm:inline-block">Pricing</a>
           <a href="#faq" className="text-sm text-muted-foreground hover:text-foreground transition-colors hidden sm:inline-block">FAQ</a>
