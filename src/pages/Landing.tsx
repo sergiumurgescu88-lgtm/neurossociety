@@ -229,25 +229,34 @@ export default function LandingPage() {
       </section>
 
       {/* ═══ 3. STATS BAR ═══ */}
-      <Reveal>
-        <section className="relative z-10 max-w-5xl mx-auto px-6 lg:px-12 pb-24">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {[
-              { ref: c1.ref, value: c1.count, suffix: " Simboluri", sub: "monitorizate" },
-              { ref: c2.ref, value: c2.count, suffix: " min", sub: "ciclu de analiză" },
-              { ref: null, value: "~15", suffix: " știri/simbol", sub: "per ciclu", isStatic: true },
-              { ref: null, value: "24/7", suffix: "", sub: "uptime", isStatic: true },
-            ].map((s, i) => (
-              <div key={i} className="bg-card/60 border border-border-subtle rounded-xl p-5 text-center backdrop-blur-sm">
-                <p className="text-2xl lg:text-3xl font-mono font-bold text-foreground" ref={s.ref as any}>
-                  {s.isStatic ? s.value : s.value}{s.suffix}
+      <section className="relative z-10 max-w-5xl mx-auto px-6 lg:px-12 pb-28">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+          {[
+            { ref: c1.ref, value: c1.count, suffix: " Simboluri", sub: "monitorizate", icon: "📡", gradient: "from-accent/20 to-accent/5" },
+            { ref: c2.ref, value: c2.count, suffix: " min", sub: "ciclu de analiză", icon: "⏱️", gradient: "from-[hsl(200_90%_50%/0.2)] to-[hsl(200_90%_50%/0.05)]" },
+            { ref: null, value: "~15", suffix: " știri", sub: "per simbol / ciclu", icon: "📰", gradient: "from-accent/20 to-accent/5", isStatic: true },
+            { ref: null, value: "24/7", suffix: "", sub: "uptime continuu", icon: "🔋", gradient: "from-[hsl(200_90%_50%/0.2)] to-[hsl(200_90%_50%/0.05)]", isStatic: true },
+          ].map((s, i) => (
+            <Reveal key={i} delay={i * 0.1}>
+              <div className="relative group overflow-hidden rounded-2xl border border-border-subtle bg-card/40 backdrop-blur-md p-6 hover:border-accent/40 transition-all duration-300">
+                {/* Gradient glow top */}
+                <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${s.gradient} opacity-80 group-hover:opacity-100 transition-opacity`} />
+                {/* Icon */}
+                <div className="w-10 h-10 rounded-xl bg-secondary/80 flex items-center justify-center text-lg mb-4">
+                  {s.icon}
+                </div>
+                {/* Number */}
+                <p className="font-heading text-3xl lg:text-4xl font-bold text-foreground tracking-tight leading-none" ref={s.ref as any}>
+                  {s.isStatic ? s.value : s.value}
+                  <span className="text-base lg:text-lg font-medium text-muted-foreground ml-1">{s.suffix}</span>
                 </p>
-                <p className="text-xs text-muted-foreground font-body mt-1">{s.sub}</p>
+                {/* Label */}
+                <p className="text-xs text-muted-foreground font-body mt-2 uppercase tracking-wider">{s.sub}</p>
               </div>
-            ))}
-          </div>
-        </section>
-      </Reveal>
+            </Reveal>
+          ))}
+        </div>
+      </section>
 
       {/* ═══ 4. CUM FUNCȚIONEAZĂ ═══ */}
       <section className="relative z-10 max-w-5xl mx-auto px-6 lg:px-12 pb-24">
