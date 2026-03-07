@@ -151,7 +151,7 @@ export default function useSupabaseData(): SupabaseData {
 
   useEffect(() => {
     fetchAll();
-    const interval = setInterval(fetchAll, 10000);
+    const interval = setInterval(fetchAll, 5000);
 
     const channel = supabase
       .channel("portfolio-realtime")

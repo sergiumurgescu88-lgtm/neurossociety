@@ -269,7 +269,16 @@ export default function Dashboard({ portfolio, positions, signals, trades, logs,
                 <span className="text-xs text-accent font-mono">LIVE</span>
               </span>
             </h3>
-            <span className="text-xs text-muted-foreground">last {Math.min(logs.length, 50)} events</span>
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-muted-foreground">last {Math.min(logs.length, 50)} events</span>
+              <button
+                onClick={() => window.location.reload()}
+                className="text-xs text-muted-foreground hover:text-accent transition-colors duration-150 flex items-center gap-1.5 font-mono"
+                title="Refresh date"
+              >
+                🔄 Refresh
+              </button>
+            </div>
           </div>
           <div className="space-y-0.5 font-mono text-xs max-h-[280px] overflow-y-auto scrollbar-hide">
             {logs.slice(0, 50).map((log: any) => (
