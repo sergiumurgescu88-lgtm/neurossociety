@@ -310,8 +310,8 @@ export default function LandingPage() {
             <Reveal key={s.ticker} delay={i * 0.06}>
               <div className="bg-card/60 border border-border-subtle rounded-xl p-4 backdrop-blur-sm hover:border-accent/30 transition-colors duration-200">
                 <div className="flex items-center gap-3 mb-1">
-                  <div className={`w-9 h-9 rounded-lg bg-gradient-to-br ${s.color} flex items-center justify-center text-xs font-mono font-bold text-white`}>
-                    {s.ticker.slice(0, 2)}
+                  <div className={`w-9 h-9 rounded-lg ${s.bg} flex items-center justify-center overflow-hidden`}>
+                    <img src={s.logo} alt={s.ticker} className="w-6 h-6 object-contain" />
                   </div>
                   <div>
                     <p className="text-sm font-heading font-semibold text-foreground">{s.ticker}</p>
@@ -334,7 +334,7 @@ export default function LandingPage() {
           {features.map((f, i) => (
             <Reveal key={f.title} delay={i * 0.08}>
               <div className="bg-card/60 border border-border-subtle rounded-xl p-6 backdrop-blur-sm hover:border-accent/40 transition-colors duration-200 h-full">
-                <span className="text-3xl mb-3 block">{f.emoji}</span>
+                <img src={f.icon} alt={f.title} className="w-10 h-10 object-contain mb-4" />
                 <h3 className="font-heading text-sm font-semibold text-foreground mb-2">{f.title}</h3>
                 <p className="text-xs text-muted-foreground font-body leading-relaxed">{f.desc}</p>
               </div>
