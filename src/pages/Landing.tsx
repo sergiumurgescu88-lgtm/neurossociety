@@ -194,7 +194,7 @@ export default function LandingPage() {
               transition={{ duration: 0.5 }}
             >
               <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 border border-accent/20 text-xs font-medium text-accent mb-6">
-                <motion.span animate={{ rotate: [0, 10, -10, 0] }} transition={{ repeat: Infinity, duration: 2 }}>🤖</motion.span>
+                <span>🤖</span>
                 Powered by Gemini AI
               </span>
             </motion.div>
