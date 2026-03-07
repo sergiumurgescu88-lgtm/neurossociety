@@ -104,10 +104,10 @@ function AppRoutes() {
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/auth" element={<AuthPage />} />
-      <Route path="/dashboard" element={protect(<DashboardContent />)} />
-      <Route path="/positions" element={protect(<PositionsContent />)} />
-      <Route path="/signals" element={protect(<SignalsContent />)} />
-      <Route path="/trades" element={protect(<TradesContent />)} />
+      <Route path="/dashboard" element={<DashboardLayout><DashboardContent /></DashboardLayout>} />
+      <Route path="/positions" element={<DashboardLayout><PositionsContent /></DashboardLayout>} />
+      <Route path="/signals" element={<DashboardLayout><SignalsContent /></DashboardLayout>} />
+      <Route path="/trades" element={<DashboardLayout><TradesContent /></DashboardLayout>} />
       <Route path="/settings" element={protect(<SettingsPage />)} />
       <Route path="*" element={<NotFound />} />
     </Routes>
