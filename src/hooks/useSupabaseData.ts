@@ -105,6 +105,7 @@ export default function useSupabaseData(): SupabaseData {
   const [signals, setSignals] = useState<Signal[]>([]);
   const [trades, setTrades] = useState<Trade[]>([]);
   const [logs, setLogs] = useState<CycleLog[]>([]);
+  const [equityHistory, setEquityHistory] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
