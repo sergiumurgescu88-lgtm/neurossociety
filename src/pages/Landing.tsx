@@ -77,18 +77,18 @@ const symbols = [
 ];
 
 const howItWorks = [
-  { emoji: "📰", title: "Colectare Știri", desc: "NewsAPI, Yahoo Finance, Google News, Finviz, Seeking Alpha — agregate în timp real pentru fiecare simbol." },
-  { emoji: "🧠", title: "Analiză Gemini AI", desc: "Sentiment analysis, confidence score, reasoning detaliat — totul procesat de Google Gemini 2.0 Flash." },
-  { emoji: "⚡", title: "Execuție Automată", desc: "RSI + MACD + EMA + Kelly position sizing → ordine trimise automat prin Alpaca Markets." },
+  { emoji: "📰", title: "News Collection", desc: "NewsAPI, Yahoo Finance, Google News, Finviz, Seeking Alpha — aggregated in real-time for every symbol." },
+  { emoji: "🧠", title: "Gemini AI Analysis", desc: "Sentiment analysis, confidence scoring, detailed reasoning — all processed by Google Gemini 2.0 Flash." },
+  { emoji: "⚡", title: "Automatic Execution", desc: "RSI + MACD + EMA + Kelly position sizing → orders sent automatically via Alpaca Markets." },
 ];
 
 const features = [
-  { icon: iconShield, title: "Stop Loss / Take Profit", desc: "Fiecare poziție protejată automat cu SL -5% și TP +12%." },
-  { icon: iconChart, title: "RSI + MACD + EMA", desc: "Indicatori tehnici calculați în timp real pentru semnale precise." },
-  { icon: iconGlobe, title: "Market Regime Detection", desc: "Analiză SPY pentru detectare trend: Bull, Bear, Volatile." },
-  { icon: iconTrailing, title: "Trailing Stop Dinamic", desc: "Urmărește prețul și vinde automat la -4% de la maxim." },
-  { icon: iconSizing, title: "Kelly Position Sizing", desc: "Mărimea pozițiilor calculată matematic pentru randament optim." },
-  { icon: iconBell, title: "Notificări Telegram", desc: "Alerte instant pentru fiecare tranzacție și event important." },
+  { icon: iconShield, title: "Stop Loss / Take Profit", desc: "Every position automatically protected with SL -5% and TP +12%." },
+  { icon: iconChart, title: "RSI + MACD + EMA", desc: "Technical indicators calculated in real-time for precise signals." },
+  { icon: iconGlobe, title: "Market Regime Detection", desc: "SPY analysis for trend detection: Bull, Bear, Volatile." },
+  { icon: iconTrailing, title: "Dynamic Trailing Stop", desc: "Follows price upward and auto-sells at -4% from peak." },
+  { icon: iconSizing, title: "Kelly Position Sizing", desc: "Position sizes mathematically calculated for optimal returns." },
+  { icon: iconBell, title: "Telegram Notifications", desc: "Instant alerts for every trade and important event." },
 ];
 
 /* ── Mini sparkline SVG ── */
@@ -98,7 +98,7 @@ function Sparkline() {
     return `${i * 5},${Math.max(2, Math.min(38, y))}`;
   }).join(" ");
   return (
-    <svg viewBox="0 0 95 40" className="w-full h-8 mt-2">
+    <svg viewBox="0 0 95 40" className="w-full h-10 mt-3">
       <polyline fill="none" stroke="hsl(var(--accent))" strokeWidth="1.5" strokeLinecap="round" points={points} opacity="0.7" />
     </svg>
   );
@@ -195,8 +195,8 @@ export default function LandingPage() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.08] mb-6 text-foreground"
             >
-              Tranzacționează<br />
-              Inteligent. Autonom.{" "}
+              Trade Smarter.<br />
+              Autonomous.{" "}
               <span className="text-accent">24/7.</span>
             </motion.h1>
 
@@ -206,7 +206,7 @@ export default function LandingPage() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-base lg:text-lg text-muted-foreground font-body leading-relaxed mb-8 max-w-xl"
             >
-              Bot de trading AI care analizează știri în timp real, calculează indicatori tehnici și execută ordine automat pe piața americană.
+              AI trading bot that analyzes real-time news, calculates technical indicators, and automatically executes orders on the US stock market.
             </motion.p>
 
             <motion.div
@@ -216,10 +216,10 @@ export default function LandingPage() {
               className="flex flex-wrap gap-3 mb-5"
             >
               <Link to="/dashboard" className="px-6 py-3 rounded-xl bg-accent text-accent-foreground font-semibold text-sm hover:bg-accent/90 transition-all duration-150 shadow-lg shadow-accent/25">
-                Vezi Dashboard Live →
+                View Live Dashboard →
               </Link>
               <Link to="/dashboard" className="px-6 py-3 rounded-xl border-2 border-border-subtle text-muted-foreground font-semibold text-sm hover:bg-card-hover hover:text-foreground transition-all duration-150">
-                Demo Gratuit
+                Free Demo
               </Link>
             </motion.div>
 
@@ -229,8 +229,8 @@ export default function LandingPage() {
               transition={{ duration: 0.6, delay: 0.5 }}
               className="flex flex-wrap gap-4 text-xs text-muted-foreground font-body"
             >
-              <span className="flex items-center gap-1.5"><span className="text-accent">✓</span> Fără cont necesar</span>
-              <span className="flex items-center gap-1.5"><span className="text-accent">✓</span> Date în timp real</span>
+              <span className="flex items-center gap-1.5"><span className="text-accent">✓</span> No account required</span>
+              <span className="flex items-center gap-1.5"><span className="text-accent">✓</span> Real-time data</span>
               <span className="flex items-center gap-1.5"><span className="text-accent">✓</span> Paper trading</span>
             </motion.div>
           </div>
@@ -250,25 +250,21 @@ export default function LandingPage() {
       <section className="relative z-10 max-w-5xl mx-auto px-6 lg:px-12 pb-28">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
           {[
-            { ref: c1.ref, value: c1.count, suffix: " Simboluri", sub: "monitorizate", icon: "📡", gradient: "from-accent/20 to-accent/5" },
-            { ref: c2.ref, value: c2.count, suffix: " min", sub: "ciclu de analiză", icon: "⏱️", gradient: "from-[hsl(200_90%_50%/0.2)] to-[hsl(200_90%_50%/0.05)]" },
-            { ref: null, value: "~15", suffix: " știri", sub: "per simbol / ciclu", icon: "📰", gradient: "from-accent/20 to-accent/5", isStatic: true },
-            { ref: null, value: "24/7", suffix: "", sub: "uptime continuu", icon: "🔋", gradient: "from-[hsl(200_90%_50%/0.2)] to-[hsl(200_90%_50%/0.05)]", isStatic: true },
+            { ref: c1.ref, value: c1.count, suffix: " Symbols", sub: "monitored", icon: "📡", gradient: "from-accent/20 to-accent/5" },
+            { ref: c2.ref, value: c2.count, suffix: " min", sub: "analysis cycle", icon: "⏱️", gradient: "from-[hsl(200_90%_50%/0.2)] to-[hsl(200_90%_50%/0.05)]" },
+            { ref: null, value: "~15", suffix: " news", sub: "per symbol / cycle", icon: "📰", gradient: "from-accent/20 to-accent/5", isStatic: true },
+            { ref: null, value: "24/7", suffix: "", sub: "continuous uptime", icon: "🔋", gradient: "from-[hsl(200_90%_50%/0.2)] to-[hsl(200_90%_50%/0.05)]", isStatic: true },
           ].map((s, i) => (
             <Reveal key={i} delay={i * 0.1}>
               <div className="relative group overflow-hidden rounded-2xl border border-border-subtle bg-card/40 backdrop-blur-md p-6 hover:border-accent/40 transition-all duration-300">
-                {/* Gradient glow top */}
                 <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${s.gradient} opacity-80 group-hover:opacity-100 transition-opacity`} />
-                {/* Icon */}
                 <div className="w-10 h-10 rounded-xl bg-secondary/80 flex items-center justify-center text-lg mb-4">
                   {s.icon}
                 </div>
-                {/* Number */}
                 <p className="font-heading text-3xl lg:text-4xl font-bold text-foreground tracking-tight leading-none" ref={s.ref as any}>
                   {s.isStatic ? s.value : s.value}
                   <span className="text-base lg:text-lg font-medium text-muted-foreground ml-1">{s.suffix}</span>
                 </p>
-                {/* Label */}
                 <p className="text-xs text-muted-foreground font-body mt-2 uppercase tracking-wider">{s.sub}</p>
               </div>
             </Reveal>
@@ -276,12 +272,12 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ═══ 4. CUM FUNCȚIONEAZĂ ═══ */}
+      {/* ═══ 4. HOW IT WORKS ═══ */}
       <section className="relative z-10 max-w-5xl mx-auto px-6 lg:px-12 pb-24">
         <Reveal>
           <div className="text-center mb-12">
-            <h2 className="font-heading text-3xl lg:text-4xl font-bold tracking-tight text-foreground mb-3">Cum Funcționează</h2>
-            <p className="text-muted-foreground font-body max-w-lg mx-auto">De la știri brute la tranzacții executate — în 3 pași automatizați.</p>
+            <h2 className="font-heading text-3xl lg:text-4xl font-bold tracking-tight text-foreground mb-3">How It Works</h2>
+            <p className="text-muted-foreground font-body max-w-lg mx-auto">From raw news to executed trades — in 3 automated steps.</p>
           </div>
         </Reveal>
         <div className="grid md:grid-cols-3 gap-6">
@@ -297,25 +293,25 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ═══ 5. SIMBOLURI MONITORIZATE ═══ */}
+      {/* ═══ 5. MONITORED SYMBOLS ═══ */}
       <section className="relative z-10 max-w-5xl mx-auto px-6 lg:px-12 pb-24">
         <Reveal>
           <div className="text-center mb-10">
-            <h2 className="font-heading text-3xl lg:text-4xl font-bold tracking-tight text-foreground mb-3">Simboluri Monitorizate</h2>
-            <p className="text-muted-foreground font-body">8 acțiuni tech majore, analizate non-stop.</p>
+            <h2 className="font-heading text-3xl lg:text-4xl font-bold tracking-tight text-foreground mb-3">Monitored Symbols</h2>
+            <p className="text-muted-foreground font-body">8 major tech stocks, analyzed non-stop.</p>
           </div>
         </Reveal>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {symbols.map((s, i) => (
             <Reveal key={s.ticker} delay={i * 0.06}>
-              <div className="bg-card/60 border border-border-subtle rounded-xl p-4 backdrop-blur-sm hover:border-accent/30 transition-colors duration-200">
-                <div className="flex items-center gap-3 mb-1">
-                  <div className={`w-9 h-9 rounded-lg ${s.bg} flex items-center justify-center overflow-hidden`}>
-                    <img src={s.logo} alt={s.ticker} className="w-6 h-6 object-contain" />
+              <div className="bg-card/60 border border-border-subtle rounded-xl p-5 backdrop-blur-sm hover:border-accent/30 transition-colors duration-200">
+                <div className="flex items-center gap-4 mb-2">
+                  <div className={`w-12 h-12 rounded-xl ${s.bg} flex items-center justify-center overflow-hidden border border-border-subtle`}>
+                    <img src={s.logo} alt={s.ticker} className="w-9 h-9 object-contain" />
                   </div>
                   <div>
-                    <p className="text-sm font-heading font-semibold text-foreground">{s.ticker}</p>
-                    <p className="text-[10px] text-muted-foreground font-body">{s.name}</p>
+                    <p className="text-base font-heading font-bold text-foreground">{s.ticker}</p>
+                    <p className="text-xs text-muted-foreground font-body">{s.name}</p>
                   </div>
                 </div>
                 <Sparkline />
@@ -334,7 +330,7 @@ export default function LandingPage() {
           {features.map((f, i) => (
             <Reveal key={f.title} delay={i * 0.08}>
               <div className="bg-card/60 border border-border-subtle rounded-xl p-6 backdrop-blur-sm hover:border-accent/40 transition-colors duration-200 h-full">
-                <img src={f.icon} alt={f.title} className="w-10 h-10 object-contain mb-4" />
+                <img src={f.icon} alt={f.title} className="w-12 h-12 object-contain mb-4" />
                 <h3 className="font-heading text-sm font-semibold text-foreground mb-2">{f.title}</h3>
                 <p className="text-xs text-muted-foreground font-body leading-relaxed">{f.desc}</p>
               </div>
@@ -355,13 +351,13 @@ export default function LandingPage() {
               backgroundSize: "20px 20px",
             }} />
             <h2 className="font-heading text-3xl lg:text-4xl font-bold tracking-tight text-foreground mb-4 relative z-10">
-              Explorează Dashboard-ul Live
+              Explore the Live Dashboard
             </h2>
             <p className="text-muted-foreground font-body mb-8 max-w-md mx-auto relative z-10">
-              Date reale, bot activ, fără înregistrare necesară.
+              Real data, active bot, no registration required.
             </p>
             <Link to="/dashboard" className="inline-flex px-8 py-4 rounded-xl bg-accent text-accent-foreground font-bold text-sm hover:bg-accent/90 transition-all duration-150 shadow-xl shadow-accent/30 relative z-10">
-              Deschide Dashboard →
+              Open Dashboard →
             </Link>
           </div>
         </section>
@@ -375,7 +371,7 @@ export default function LandingPage() {
             <span className="text-xs text-muted-foreground font-body">NeuroTrade © 2026</span>
           </div>
           <p className="text-[10px] text-muted-foreground/60 font-body text-center">
-            Paper Trading Only. Nu reprezintă consultanță financiară.
+            Paper Trading Only. This is not financial advice.
           </p>
         </div>
       </footer>
