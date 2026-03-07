@@ -66,7 +66,7 @@ interface Trade {
   timestamp?: string;
 }
 
-interface SupabaseData {
+export interface SupabaseData {
   portfolio: Portfolio | null;
   positions: Position[];
   signals: Signal[];
@@ -79,14 +79,18 @@ interface SupabaseData {
 }
 
 async function fetchTable<T>(table: string): Promise<T[]> {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*`, {
-    headers: {
-      apikey: SUPABASE_KEY,
-      Authorization: `Bearer ${SUPABASE_KEY}`,
-    },
-  });
-  if (!res.ok) return [];
-  return res.json();
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*`, {
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+      },
+    });
+    if (!res.ok) return [];
+    return res.json();
+  } catch {
+    return [];
+  }
 }
 
 export default function useSupabaseData(): SupabaseData {
@@ -126,7 +130,7 @@ export default function useSupabaseData(): SupabaseData {
       }
       isFirst.current = false;
     } catch {
-      // silent
+      // silent fail
     } finally {
       setLoading(false);
       setIsSyncing(false);
