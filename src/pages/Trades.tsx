@@ -73,54 +73,60 @@ export default function TradesPage({ trades, loading }: TradesPageProps) {
                 </tr>
               </thead>
               <tbody>
-                {paged.map((t) => (
-                  <tr
-                    key={t.id}
-                    className={`border-b border-border-subtle/50 hover:bg-card-hover transition-colors duration-150 border-l-[3px] ${
-                      t.action === "BUY" ? "border-l-accent/30" : "border-l-danger/30"
-                    }`}
-                  >
-                    <td className="p-4 text-muted-foreground text-xs">
-                      {t.timestamp ? format(new Date(t.timestamp), "MMM d, HH:mm") : "—"}
-                    </td>
-                    <td className="p-4 font-heading font-semibold">{t.symbol}</td>
-                    <td className="p-4">
-                      <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${t.action === "BUY" ? "bg-accent-dim text-accent" : "bg-danger-dim text-danger"}`}>
-                        {t.action}
-                      </span>
-                    </td>
-                    <td className="p-4 font-mono text-xs">
-                      {t.qty ? `${t.qty} @ ` : ""}{formatCurrencyPlain(t.price)}
-                    </td>
-                    <td className="p-4 font-mono text-xs hidden md:table-cell">
-                      {(t.qty && t.price) ? formatCurrencyPlain(t.qty * t.price) : t.value ? formatCurrencyPlain(t.value) : "—"}
-                    </td>
-                    <td className="p-4 hidden lg:table-cell">
-                      {t.close_type && (
-                        <span className={`text-xs px-2 py-0.5 rounded-full ${typeColors[t.close_type] ?? "bg-secondary text-muted-foreground"}`}>
-                          {t.close_type}
+                {paged.map((t) => {
+                  const hasQty = t.qty != null && t.qty > 0;
+                  const computedValue = hasQty && t.price ? t.qty * t.price : 0;
+                  const displayValue = computedValue > 0 ? formatCurrencyPlain(computedValue) : t.value ? formatCurrencyPlain(t.value) : "—";
+
+                  return (
+                    <tr
+                      key={t.id}
+                      className={`border-b border-border-subtle/50 hover:bg-card-hover transition-colors duration-150 border-l-[3px] ${
+                        t.action === "BUY" ? "border-l-accent/30" : "border-l-danger/30"
+                      }`}
+                    >
+                      <td className="p-4 text-muted-foreground text-xs">
+                        {t.timestamp ? format(new Date(t.timestamp), "MMM d, HH:mm") : "—"}
+                      </td>
+                      <td className="p-4 font-heading font-semibold">{t.symbol}</td>
+                      <td className="p-4">
+                        <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${t.action === "BUY" ? "bg-accent-dim text-accent" : "bg-danger-dim text-danger"}`}>
+                          {t.action}
                         </span>
-                      )}
-                    </td>
-                    <td className="p-4">
-                      {t.action === "SELL" && t.pl != null ? (
-                        <span className={`font-mono font-semibold ${t.pl >= 0 ? "text-accent" : "text-danger"}`}>{formatCurrency(t.pl)}</span>
-                      ) : (
-                        <span className="text-muted-foreground">—</span>
-                      )}
-                    </td>
-                    <td className="p-4 hidden lg:table-cell">
-                      {t.confidence != null && (
-                        <div className="flex items-center gap-1.5">
-                          <div className="w-12 h-1.5 bg-secondary rounded-full overflow-hidden">
-                            <div className="h-full bg-accent rounded-full" style={{ width: `${t.confidence}%` }} />
+                      </td>
+                      <td className="p-4 font-mono text-xs">
+                        {hasQty ? `${t.qty} @ ` : ""}{formatCurrencyPlain(t.price)}
+                      </td>
+                      <td className="p-4 font-mono text-xs hidden md:table-cell">
+                        {displayValue}
+                      </td>
+                      <td className="p-4 hidden lg:table-cell">
+                        {t.close_type && (
+                          <span className={`text-xs px-2 py-0.5 rounded-full ${typeColors[t.close_type] ?? "bg-secondary text-muted-foreground"}`}>
+                            {t.close_type}
+                          </span>
+                        )}
+                      </td>
+                      <td className="p-4">
+                        {t.action === "SELL" && t.pl != null && hasQty ? (
+                          <span className={`font-mono font-semibold ${t.pl >= 0 ? "text-accent" : "text-danger"}`}>{formatCurrency(t.pl)}</span>
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        )}
+                      </td>
+                      <td className="p-4 hidden lg:table-cell">
+                        {t.confidence != null && (
+                          <div className="flex items-center gap-1.5">
+                            <div className="w-12 h-1.5 bg-secondary rounded-full overflow-hidden">
+                              <div className="h-full bg-accent rounded-full" style={{ width: `${t.confidence}%` }} />
+                            </div>
+                            <span className="font-mono text-xs text-muted-foreground">{t.confidence}%</span>
                           </div>
-                          <span className="font-mono text-xs text-muted-foreground">{t.confidence}%</span>
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

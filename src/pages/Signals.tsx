@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { formatCurrencyPlain } from "@/lib/format";
+import { timeAgo } from "@/lib/format";
 
 interface SignalsPageProps {
   signals: any[];
@@ -36,7 +37,6 @@ export default function SignalsPage({ signals, loading }: SignalsPageProps) {
         <p className="text-sm text-muted-foreground">Gemini 2.0 Flash analysis — refreshes every cycle</p>
       </div>
 
-      {/* Filters */}
       <div className="flex gap-2 flex-wrap">
         {filters.map(f => (
           <button
@@ -80,8 +80,10 @@ function SignalCard({ signal: s }: { signal: any }) {
     HIGH: "bg-danger-dim text-danger",
   };
 
+  const isLowConfHold = s.action === "HOLD" && (s.confidence ?? 0) < 65;
+
   return (
-    <div className="bg-card border border-border-subtle rounded-xl p-5 shadow-lg shadow-black/20 hover:bg-card-hover transition-colors duration-150">
+    <div className={`relative bg-card border border-border-subtle rounded-xl p-5 shadow-lg shadow-black/20 hover:bg-card-hover transition-colors duration-150 ${isLowConfHold ? "opacity-60" : ""}`}>
       {/* Top */}
       <div className="flex items-center justify-between mb-4">
         <div>
@@ -115,12 +117,17 @@ function SignalCard({ signal: s }: { signal: any }) {
         </span>
       </div>
 
-      {/* Risk */}
-      {s.risk_level && (
-        <span className={`text-xs px-2 py-0.5 rounded-full ${riskColors[s.risk_level?.toUpperCase()] ?? riskColors.MEDIUM}`}>
-          {s.risk_level.toUpperCase()} RISK
-        </span>
-      )}
+      {/* Risk + Timestamp */}
+      <div className="flex items-center justify-between mb-2">
+        {s.risk_level && (
+          <span className={`text-xs px-2 py-0.5 rounded-full ${riskColors[s.risk_level?.toUpperCase()] ?? riskColors.MEDIUM}`}>
+            {s.risk_level.toUpperCase()} RISK
+          </span>
+        )}
+        {s.updated_at && (
+          <span className="text-xs text-muted-foreground">Updated {timeAgo(s.updated_at)}</span>
+        )}
+      </div>
 
       {/* Executed / Blocked */}
       {s.executed && (
@@ -133,7 +140,7 @@ function SignalCard({ signal: s }: { signal: any }) {
       {/* Reasoning */}
       {s.reasoning && (
         <div className="mt-3">
-          <p className={`text-xs text-muted-foreground italic ${expanded ? "" : "line-clamp-2"}`}>{s.reasoning}</p>
+          <p className={`text-xs text-muted-foreground italic whitespace-pre-line ${expanded ? "" : "line-clamp-2"}`}>{s.reasoning}</p>
           <button onClick={() => setExpanded(!expanded)} className="text-xs text-accent mt-1 hover:underline">
             {expanded ? "Show less" : "Show more"}
           </button>

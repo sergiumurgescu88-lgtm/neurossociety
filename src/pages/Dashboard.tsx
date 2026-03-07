@@ -1,5 +1,5 @@
 import { formatCurrencyPlain, formatCurrency, formatPercent } from "@/lib/format";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
+import { XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart, ReferenceLine } from "recharts";
 import { Link } from "react-router-dom";
 
 interface DashboardProps {
@@ -33,7 +33,6 @@ export default function Dashboard({ portfolio, positions, signals, trades, equit
   const totalTrades = portfolio?.total_trades ?? 0;
   const totalPl = portfolio?.total_pl ?? 0;
 
-  // Win rate from trades
   const sellTrades = trades.filter((t: any) => t.action === "SELL");
   const wins = sellTrades.filter((t: any) => (t.pl ?? 0) > 0).length;
   const losses = sellTrades.filter((t: any) => (t.pl ?? 0) <= 0).length;
@@ -50,7 +49,6 @@ export default function Dashboard({ portfolio, positions, signals, trades, equit
     <div className="space-y-6">
       {/* KPI Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        {/* Total Equity */}
         <div className="bg-card border border-border-subtle rounded-xl p-5 shadow-lg shadow-black/20">
           <p className="text-xs text-muted-foreground font-body mb-1">Total Equity</p>
           <p className="text-2xl font-mono font-semibold">{formatCurrencyPlain(equity)}</p>
@@ -59,7 +57,6 @@ export default function Dashboard({ portfolio, positions, signals, trades, equit
           </p>
         </div>
 
-        {/* Cash */}
         <div className="bg-card border border-border-subtle rounded-xl p-5 shadow-lg shadow-black/20">
           <p className="text-xs text-muted-foreground font-body mb-1">Available Cash</p>
           <p className="text-2xl font-mono font-semibold">{formatCurrencyPlain(cash)}</p>
@@ -69,7 +66,6 @@ export default function Dashboard({ portfolio, positions, signals, trades, equit
           </div>
         </div>
 
-        {/* Win Rate */}
         <div className="bg-card border border-border-subtle rounded-xl p-5 shadow-lg shadow-black/20">
           <p className="text-xs text-muted-foreground font-body mb-1">Win Rate</p>
           <p className={`text-2xl font-mono font-semibold ${sellTrades.length === 0 ? "text-muted-foreground" : winRate >= 50 ? "text-accent" : winRate >= 40 ? "text-warning" : "text-danger"}`}>
@@ -78,7 +74,6 @@ export default function Dashboard({ portfolio, positions, signals, trades, equit
           <p className="text-xs text-muted-foreground mt-1">{sellTrades.length === 0 ? "No closed trades yet" : `${wins}W / ${losses}L / ${sellTrades.length} Total`}</p>
         </div>
 
-        {/* Realized P&L */}
         <div className="bg-card border border-border-subtle rounded-xl p-5 shadow-lg shadow-black/20">
           <p className="text-xs text-muted-foreground font-body mb-1">Realized P&L</p>
           <p className={`text-2xl font-mono font-semibold ${totalPl >= 0 ? "text-accent" : "text-danger"}`}>
@@ -109,8 +104,15 @@ export default function Dashboard({ portfolio, positions, signals, trades, equit
                     <stop offset="100%" stopColor="hsl(160,84%,39%)" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <YAxis domain={[eqMin * 0.999, eqMax * 1.001]} hide />
+                <YAxis domain={[eqMin * 0.9995, eqMax * 1.0005]} hide />
                 <XAxis dataKey="idx" hide />
+                <ReferenceLine
+                  y={100000}
+                  stroke="hsl(218,11%,65%)"
+                  strokeDasharray="4 4"
+                  strokeWidth={1}
+                  label={{ value: "Start", position: "left", fill: "hsl(218,11%,65%)", fontSize: 10 }}
+                />
                 <Tooltip
                   contentStyle={{ background: "hsl(217,33%,11%)", border: "1px solid hsl(215,19%,17%)", borderRadius: 8, fontSize: 12 }}
                   labelStyle={{ display: "none" }}
@@ -125,7 +127,6 @@ export default function Dashboard({ portfolio, positions, signals, trades, equit
         {/* Market Status */}
         <div className="lg:col-span-2 bg-card border border-border-subtle rounded-xl p-5 shadow-lg shadow-black/20">
           <h3 className="font-heading text-base font-semibold mb-4">Market Status</h3>
-
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-xs text-muted-foreground">SPY Change</span>
@@ -133,12 +134,10 @@ export default function Dashboard({ portfolio, positions, signals, trades, equit
                 {(portfolio?.spy_change_pct ?? 0) >= 0 ? "↑" : "↓"} {formatPercent(portfolio?.spy_change_pct)}
               </span>
             </div>
-
             <div className="flex justify-between items-center">
               <span className="text-xs text-muted-foreground">Market Trend</span>
               <TrendBadge trend={portfolio?.market_trend} />
             </div>
-
             {portfolio?.safe_mode && (
               <div className="bg-warning-dim border border-warning/20 rounded-lg p-3 flex items-center gap-2">
                 <span>⚠️</span>
@@ -146,9 +145,7 @@ export default function Dashboard({ portfolio, positions, signals, trades, equit
               </div>
             )}
           </div>
-
           <div className="border-t border-border-subtle my-4" />
-
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div>
               <p className="text-xs text-muted-foreground">Current Cycle</p>
@@ -179,19 +176,18 @@ export default function Dashboard({ portfolio, positions, signals, trades, equit
           </div>
           <Link to="/signals" className="text-xs text-accent hover:underline">View all signals →</Link>
         </div>
-
         {topSignals.length === 0 ? (
           <p className="text-center text-muted-foreground py-8 text-sm">No signals yet</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <div className="overflow-x-auto -mx-5 px-5">
+            <table className="w-full text-sm min-w-[600px]">
               <thead>
                 <tr className="border-b border-border-subtle text-xs text-muted-foreground">
                   <th className="text-left pb-3 font-medium">Symbol</th>
                   <th className="text-left pb-3 font-medium">Action</th>
                   <th className="text-left pb-3 font-medium">Confidence</th>
-                  <th className="text-left pb-3 font-medium hidden md:table-cell">RSI</th>
-                  <th className="text-left pb-3 font-medium hidden lg:table-cell">EMA Trend</th>
+                  <th className="text-left pb-3 font-medium">RSI</th>
+                  <th className="text-left pb-3 font-medium">EMA Trend</th>
                   <th className="text-left pb-3 font-medium">Executed</th>
                 </tr>
               </thead>
@@ -211,12 +207,12 @@ export default function Dashboard({ portfolio, positions, signals, trades, equit
                         <span className="font-mono text-xs">{s.confidence}%</span>
                       </div>
                     </td>
-                    <td className="py-3 hidden md:table-cell">
+                    <td className="py-3">
                       <span className={`font-mono text-xs ${(s.rsi ?? 50) < 30 ? "text-accent" : (s.rsi ?? 50) > 70 ? "text-danger" : "text-muted-foreground"}`}>
                         {s.rsi?.toFixed(1) ?? "—"}
                       </span>
                     </td>
-                    <td className="py-3 hidden lg:table-cell">
+                    <td className="py-3">
                       <span className={`text-xs ${s.ema_trend === "bullish" ? "text-accent" : s.ema_trend === "bearish" ? "text-danger" : "text-muted-foreground"}`}>
                         {s.ema_trend ?? "—"}
                       </span>

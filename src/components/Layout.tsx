@@ -35,7 +35,10 @@ export default function Layout({ children, portfolio, lastUpdate, isSyncing, onR
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      {/* Subtle animated background grid */}
+      <div className="fixed inset-0 z-0 pointer-events-none bg-grid-pattern opacity-[0.03]" />
+
       <AppSidebar portfolio={portfolio} />
 
       {/* Mobile slide-out menu */}
@@ -88,7 +91,7 @@ export default function Layout({ children, portfolio, lastUpdate, isSyncing, onR
         </div>
       )}
 
-      <div className="lg:ml-60 min-h-screen flex flex-col">
+      <div className="lg:ml-60 min-h-screen flex flex-col relative z-10">
         <AppHeader
           title={title}
           cycle={portfolio?.cycle}
@@ -96,6 +99,7 @@ export default function Layout({ children, portfolio, lastUpdate, isSyncing, onR
           isSyncing={isSyncing}
           onRefresh={onRefresh}
           onMenuToggle={() => setMobileMenuOpen(true)}
+          marketTrend={portfolio?.market_trend}
         />
         {portfolio?.safe_mode && (
           <div className="mx-4 lg:mx-6 mt-4 bg-warning-dim border border-warning/20 rounded-lg p-3 flex items-center gap-2">

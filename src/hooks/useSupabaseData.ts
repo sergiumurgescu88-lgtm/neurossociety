@@ -1,8 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { createClient } from "@supabase/supabase-js";
 import { toast } from "sonner";
 
 const SUPABASE_URL = "https://lgrllhsfgvnngtmlwwug.supabase.co";
 const SUPABASE_KEY = "sb_publishable_KtQkZ2_nx8rR65ypG9ZWSw_AjVWWX-N";
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 interface Portfolio {
   id?: string;
@@ -139,8 +142,32 @@ export default function useSupabaseData(): SupabaseData {
 
   useEffect(() => {
     fetchAll();
-    const interval = setInterval(fetchAll, 15000);
-    return () => clearInterval(interval);
+    const interval = setInterval(fetchAll, 10000);
+
+    // Real-time subscription for portfolio_snapshot
+    const channel = supabase
+      .channel("portfolio-realtime")
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "portfolio_snapshot" },
+        (payload) => {
+          const snap = payload.new as Portfolio;
+          setPortfolio(snap);
+          setLastUpdate(new Date());
+          if (snap?.equity != null) {
+            setEquityHistory((prev) => {
+              const next = [...prev, snap.equity!];
+              return next.length > 40 ? next.slice(-40) : next;
+            });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      clearInterval(interval);
+      supabase.removeChannel(channel);
+    };
   }, [fetchAll]);
 
   return { portfolio, positions, signals, trades, equityHistory, loading, lastUpdate, isSyncing, refresh: fetchAll };

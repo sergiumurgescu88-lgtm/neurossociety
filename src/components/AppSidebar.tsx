@@ -2,7 +2,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import { formatCurrencyPlain, formatCurrency } from "@/lib/format";
 
 interface SidebarProps {
-  portfolio: { equity?: number; pnl?: number; pnl_pct?: number } | null;
+  portfolio: { equity?: number; pnl?: number; pnl_pct?: number; updated_at?: string } | null;
 }
 
 const navItems = [
@@ -15,6 +15,9 @@ const navItems = [
 
 export default function AppSidebar({ portfolio }: SidebarProps) {
   const location = useLocation();
+  const isFresh = portfolio?.updated_at
+    ? (Date.now() - new Date(portfolio.updated_at).getTime()) < 30000
+    : false;
 
   return (
     <aside className="hidden lg:flex flex-col w-60 min-h-screen bg-background border-r border-border-subtle fixed left-0 top-0 z-40">
@@ -58,9 +61,14 @@ export default function AppSidebar({ portfolio }: SidebarProps) {
       <div className="p-4 border-t border-border-subtle">
         <div className="bg-card rounded-xl p-4 border border-border-subtle">
           <p className="text-xs text-muted-foreground font-body">Portfolio Value</p>
-          <p className="text-xl font-mono font-semibold text-foreground mt-1">
-            {portfolio?.equity != null ? formatCurrencyPlain(portfolio.equity) : "—"}
-          </p>
+          <div className="flex items-center gap-2 mt-1">
+            <p className="text-xl font-mono font-semibold text-foreground">
+              {portfolio?.equity != null ? formatCurrencyPlain(portfolio.equity) : "—"}
+            </p>
+            {isFresh && (
+              <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+            )}
+          </div>
           {portfolio?.pnl != null && (
             <p className={`text-sm font-mono mt-0.5 ${(portfolio.pnl ?? 0) >= 0 ? "text-accent" : "text-danger"}`}>
               {(portfolio.pnl ?? 0) >= 0 ? "↑" : "↓"} {formatCurrency(portfolio.pnl)} ({portfolio.pnl_pct?.toFixed(2)}%)
