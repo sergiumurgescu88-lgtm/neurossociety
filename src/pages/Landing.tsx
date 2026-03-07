@@ -389,7 +389,13 @@ export default function LandingPage() {
                   Neuro<span className="text-accent">SS</span>ociety
                 </span>
               </div>
-              <p className="text-xs text-muted-foreground font-body">AI Trading. Automated. 24/7.</p>
+              <p className="text-xs text-muted-foreground font-body mb-3">AI Trading. Automated. 24/7.</p>
+              <div className="text-[10px] text-muted-foreground/50 font-body space-y-0.5">
+                <p className="font-semibold text-muted-foreground/70">MURSE ADVERTISING S.R.L.</p>
+                <p>CUI: 44923890</p>
+                <p>J40/16148/2021</p>
+                <p>Înf. 17-09-2021</p>
+              </div>
             </div>
             {/* Product */}
             <div>
