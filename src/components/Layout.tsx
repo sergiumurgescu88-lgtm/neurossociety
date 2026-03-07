@@ -1,0 +1,108 @@
+import { ReactNode, useState } from "react";
+import { useLocation, NavLink } from "react-router-dom";
+import AppSidebar from "./AppSidebar";
+import AppHeader from "./AppHeader";
+import MobileNav from "./MobileNav";
+import { formatCurrencyPlain, formatCurrency } from "@/lib/format";
+
+interface LayoutProps {
+  children: ReactNode;
+  portfolio: any;
+  lastUpdate: Date | null;
+  isSyncing: boolean;
+  onRefresh: () => void;
+}
+
+const pageTitles: Record<string, string> = {
+  "/": "Dashboard",
+  "/positions": "Positions",
+  "/signals": "AI Signals",
+  "/trades": "Trade History",
+  "/settings": "Settings",
+};
+
+const navItems = [
+  { path: "/", label: "Dashboard", emoji: "📊" },
+  { path: "/positions", label: "Positions", emoji: "📈" },
+  { path: "/signals", label: "AI Signals", emoji: "🤖" },
+  { path: "/trades", label: "Trade History", emoji: "📋" },
+  { path: "/settings", label: "Settings", emoji: "⚙️" },
+];
+
+export default function Layout({ children, portfolio, lastUpdate, isSyncing, onRefresh }: LayoutProps) {
+  const location = useLocation();
+  const title = pageTitles[location.pathname] || "Dashboard";
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  return (
+    <div className="min-h-screen bg-background">
+      <AppSidebar portfolio={portfolio} />
+
+      {/* Mobile slide-out menu */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setMobileMenuOpen(false)} />
+          <aside className="relative w-64 h-full bg-background border-r border-border-subtle flex flex-col">
+            <div className="p-6 pb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">🤖</span>
+                <h1 className="font-heading text-xl font-bold tracking-tight">
+                  Neuro<span className="text-accent">SS</span>ociety
+                </h1>
+              </div>
+              <p className="text-[12px] text-muted-foreground mt-1">AI Trading. Automated. 24/7.</p>
+            </div>
+            <div className="mx-4 border-t border-border-subtle" />
+            <nav className="flex-1 p-4 space-y-1">
+              {navItems.map((item) => {
+                const isActive = location.pathname === item.path;
+                return (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors duration-150 ${
+                      isActive ? "bg-accent-dim text-accent border-l-[3px] border-accent" : "text-muted-foreground hover:bg-card-hover"
+                    }`}
+                  >
+                    <span>{item.emoji}</span>
+                    <span className="font-medium">{item.label}</span>
+                  </NavLink>
+                );
+              })}
+            </nav>
+            <div className="p-4 border-t border-border-subtle">
+              <div className="bg-card rounded-xl p-4 border border-border-subtle">
+                <p className="text-xs text-muted-foreground">Portfolio Value</p>
+                <p className="text-xl font-mono font-semibold text-foreground mt-1">
+                  {portfolio?.equity != null ? formatCurrencyPlain(portfolio.equity) : "—"}
+                </p>
+                {portfolio?.pnl != null && (
+                  <p className={`text-sm font-mono mt-0.5 ${(portfolio.pnl ?? 0) >= 0 ? "text-accent" : "text-danger"}`}>
+                    {(portfolio.pnl ?? 0) >= 0 ? "↑" : "↓"} {formatCurrency(portfolio.pnl)}
+                  </p>
+                )}
+              </div>
+            </div>
+          </aside>
+        </div>
+      )}
+
+      <div className="lg:ml-60 min-h-screen flex flex-col">
+        <AppHeader
+          title={title}
+          cycle={portfolio?.cycle}
+          lastUpdate={lastUpdate}
+          isSyncing={isSyncing}
+          onRefresh={onRefresh}
+          onMenuToggle={() => setMobileMenuOpen(true)}
+        />
+        <main className="flex-1 p-4 lg:p-6 pb-24 lg:pb-6">
+          {children}
+        </main>
+      </div>
+
+      <MobileNav />
+    </div>
+  );
+}
