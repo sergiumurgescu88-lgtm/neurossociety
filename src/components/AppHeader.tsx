@@ -13,6 +13,7 @@ interface HeaderProps {
 
 export default function AppHeader({ title, cycle, lastUpdate, isSyncing, onRefresh, onMenuToggle, marketTrend }: HeaderProps) {
   const isLive = lastUpdate && (Date.now() - lastUpdate.getTime()) < 30000;
+  const isStale = lastUpdate && (Date.now() - lastUpdate.getTime()) > 120000;
 
   const trendLabel = (marketTrend ?? "NEUTRAL").toUpperCase();
   const trendColor: Record<string, string> = {
@@ -34,13 +35,18 @@ export default function AppHeader({ title, cycle, lastUpdate, isSyncing, onRefre
       </div>
 
       <div className="flex items-center gap-3 text-sm">
-        {/* Live indicator */}
-        <div className="flex items-center gap-1.5">
-          <span className={`w-2 h-2 rounded-full ${isLive ? "bg-accent animate-pulse-slow" : "bg-muted-foreground"}`} />
-          <span className={`font-body text-xs ${isLive ? "text-accent" : "text-muted-foreground"}`}>
-            {isLive ? "LIVE" : "OFFLINE"}
-          </span>
-        </div>
+        {/* Recording-style live indicator */}
+        {isStale ? (
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-warning-dim">
+            <span className="text-xs">⚠️</span>
+            <span className="text-xs font-medium text-warning">Stale</span>
+          </div>
+        ) : (
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-danger-dim">
+            <span className="w-2 h-2 rounded-full bg-danger animate-pulse" />
+            <span className="text-xs font-medium text-danger">Live</span>
+          </div>
+        )}
 
         {cycle != null && (
           <span className="text-xs text-muted-foreground font-mono hidden sm:inline">Cycle #{cycle}</span>

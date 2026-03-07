@@ -6,7 +6,7 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { path: "/", label: "Dashboard", emoji: "📊" },
+  { path: "/dashboard", label: "Dashboard", emoji: "📊" },
   { path: "/positions", label: "Positions", emoji: "📈" },
   { path: "/signals", label: "AI Signals", emoji: "🤖" },
   { path: "/trades", label: "Trade History", emoji: "📋" },

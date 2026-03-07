@@ -30,6 +30,10 @@ export default function SignalsPage({ signals, loading }: SignalsPageProps) {
 
   const filtered = filter === "ALL" ? signals : signals.filter(s => s.action === filter);
 
+  const avgConfidence = signals.length > 0
+    ? (signals.reduce((sum, s) => sum + (s.confidence ?? 0), 0) / signals.length).toFixed(1)
+    : "0.0";
+
   return (
     <div className="space-y-6">
       <div>
@@ -37,6 +41,24 @@ export default function SignalsPage({ signals, loading }: SignalsPageProps) {
         <p className="text-sm text-muted-foreground">Gemini 2.0 Flash analysis — refreshes every cycle</p>
       </div>
 
+      {/* Summary bar */}
+      <div className="bg-card border border-border-subtle rounded-xl p-4 shadow-lg shadow-black/20 flex flex-wrap items-center gap-4">
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">Total:</span>
+          <span className="font-mono text-sm font-semibold">{signals.length}</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs px-2 py-0.5 rounded-full bg-accent-dim text-accent font-medium">BUY {counts.BUY ?? 0}</span>
+          <span className="text-xs px-2 py-0.5 rounded-full bg-danger-dim text-danger font-medium">SELL {counts.SELL ?? 0}</span>
+          <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-muted-foreground font-medium">HOLD {counts.HOLD ?? 0}</span>
+        </div>
+        <div className="flex items-center gap-2 ml-auto">
+          <span className="text-xs text-muted-foreground">Avg Confidence:</span>
+          <span className="font-mono text-sm font-semibold">{avgConfidence}%</span>
+        </div>
+      </div>
+
+      {/* Filters */}
       <div className="flex gap-2 flex-wrap">
         {filters.map(f => (
           <button
