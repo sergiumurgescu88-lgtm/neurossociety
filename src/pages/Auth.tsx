@@ -1,6 +1,7 @@
 import { useState, FormEvent, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import logo from "@/assets/logo.png";
 import useAuth from "@/hooks/useAuth";
 import { Loader2, Mail } from "lucide-react";
 
@@ -101,7 +102,7 @@ export default function AuthPage() {
         <div className="bg-card border border-border-subtle rounded-xl p-8 shadow-lg shadow-black/20">
           {/* Logo */}
           <div className="text-center mb-6">
-            <span className="text-4xl mb-3 block">🤖</span>
+            <img src={logo} alt="NeuroSSociety Logo" className="w-12 h-12 object-contain mx-auto mb-3" />
             <h1 className="font-heading text-xl font-bold tracking-tight">
               Neuro<span className="text-accent">SS</span>ociety
             </h1>

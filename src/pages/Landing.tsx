@@ -384,7 +384,7 @@ export default function LandingPage() {
             {/* Brand */}
             <div className="col-span-2 md:col-span-1">
               <div className="flex items-center gap-2 mb-3">
-                <span className="text-xl">🤖</span>
+                <img src={logo} alt="NeuroSSociety Logo" className="w-7 h-7 object-contain" />
                 <span className="font-heading text-base font-bold tracking-tight">
                   Neuro<span className="text-accent">SS</span>ociety
                 </span>
