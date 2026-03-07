@@ -83,4 +83,16 @@
   .font-mono-nums {
     font-family: 'JetBrains Mono', monospace;
   }
+
+  .bg-grid-pattern {
+    background-image:
+      radial-gradient(circle, hsl(var(--muted-foreground)) 0.5px, transparent 0.5px);
+    background-size: 24px 24px;
+    animation: grid-drift 20s linear infinite;
+  }
+}
+
+@keyframes grid-drift {
+  0% { background-position: 0 0; }
+  100% { background-position: 24px 24px; }
 }

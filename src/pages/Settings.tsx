@@ -6,7 +6,6 @@ export default function SettingsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left column */}
         <div className="space-y-6">
-          {/* Trading Parameters */}
           <Card title="Trading Parameters">
             <SettingsTable rows={[
               ["Cycle Interval", "15 minutes"],
@@ -17,7 +16,6 @@ export default function SettingsPage() {
             ]} />
           </Card>
 
-          {/* Risk Management */}
           <Card title="Risk Management">
             <SettingsTable rows={[
               ["Stop Loss", "-5% from entry", "text-danger"],
@@ -30,7 +28,6 @@ export default function SettingsPage() {
 
         {/* Right column */}
         <div className="space-y-6">
-          {/* Data Sources */}
           <Card title="Data Sources — News">
             <div className="flex flex-wrap gap-2">
               {["NewsAPI", "Yahoo Finance", "Seeking Alpha", "Finviz", "Benzinga", "MarketWatch", "Google News", "CNBC"].map(src => (
@@ -42,7 +39,6 @@ export default function SettingsPage() {
             </div>
           </Card>
 
-          {/* Infrastructure */}
           <Card title="Infrastructure">
             <SettingsTable rows={[
               ["Broker", "Alpaca Markets — Paper Trading"],
@@ -52,7 +48,6 @@ export default function SettingsPage() {
             ]} />
           </Card>
 
-          {/* Connection Status */}
           <Card title="Live Connection Status">
             <div className="space-y-3">
               {[
@@ -81,6 +76,18 @@ export default function SettingsPage() {
           </Card>
         </div>
       </div>
+
+      {/* About section */}
+      <Card title="About NeuroSSociety">
+        <p className="text-sm text-muted-foreground mb-4">
+          NeuroSSociety is an automated AI trading system that analyzes market data 24/7 and executes trades based on AI signals combined with technical analysis.
+        </p>
+        <SettingsTable rows={[
+          ["Version", "2.0.0"],
+          ["Built with", "Python 3.12 · Google Gemini 2.0 Flash · Alpaca Markets · Supabase"],
+          ["News Sources", "8 active feeds"],
+        ]} />
+      </Card>
     </div>
   );
 }

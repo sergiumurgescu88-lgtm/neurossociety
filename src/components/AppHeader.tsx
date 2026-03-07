@@ -8,10 +8,21 @@ interface HeaderProps {
   isSyncing: boolean;
   onRefresh: () => void;
   onMenuToggle?: () => void;
+  marketTrend?: string;
 }
 
-export default function AppHeader({ title, cycle, lastUpdate, isSyncing, onRefresh, onMenuToggle }: HeaderProps) {
+export default function AppHeader({ title, cycle, lastUpdate, isSyncing, onRefresh, onMenuToggle, marketTrend }: HeaderProps) {
   const isLive = lastUpdate && (Date.now() - lastUpdate.getTime()) < 30000;
+
+  const trendLabel = (marketTrend ?? "NEUTRAL").toUpperCase();
+  const trendColor: Record<string, string> = {
+    BULL: "bg-accent-dim text-accent",
+    BULLISH: "bg-accent-dim text-accent",
+    BEAR: "bg-danger-dim text-danger",
+    BEARISH: "bg-danger-dim text-danger",
+    VOLATILE: "bg-warning-dim text-warning",
+    NEUTRAL: "bg-secondary text-muted-foreground",
+  };
 
   return (
     <header className="h-16 border-b border-border-subtle flex items-center justify-between px-4 lg:px-6 bg-background/80 backdrop-blur-sm sticky top-0 z-30">
@@ -34,6 +45,11 @@ export default function AppHeader({ title, cycle, lastUpdate, isSyncing, onRefre
         {cycle != null && (
           <span className="text-xs text-muted-foreground font-mono hidden sm:inline">Cycle #{cycle}</span>
         )}
+
+        {/* Market trend badge */}
+        <span className={`text-xs font-medium px-2 py-0.5 rounded-full hidden sm:inline ${trendColor[trendLabel] ?? trendColor.NEUTRAL}`}>
+          {trendLabel}
+        </span>
 
         <span className="text-xs text-muted-foreground hidden sm:inline font-body">
           Updated {timeAgo(lastUpdate)}
