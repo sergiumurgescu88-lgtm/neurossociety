@@ -67,11 +67,12 @@ interface Trade {
   timestamp?: string;
 }
 
-interface CycleLog {
+export interface CycleLog {
   id: string;
+  cycle: number;
   level: string;
   message: string;
-  timestamp?: string;
+  timestamp: string;
 }
 
 export interface SupabaseData {
@@ -88,8 +89,11 @@ export interface SupabaseData {
   refresh: () => void;
 }
 
-async function fetchTable<T>(table: string): Promise<T[]> {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*`, {
+async function fetchTable<T>(table: string, order?: string, limit?: number): Promise<T[]> {
+  let url = `${SUPABASE_URL}/rest/v1/${table}?select=*`;
+  if (order) url += `&order=${order}`;
+  if (limit) url += `&limit=${limit}`;
+  const res = await fetch(url, {
     headers: {
       apikey: SUPABASE_KEY,
       Authorization: `Bearer ${SUPABASE_KEY}`,
@@ -119,16 +123,27 @@ export default function useSupabaseData(): SupabaseData {
         fetchTable<Portfolio>("portfolio_snapshot"),
         fetchTable<Position>("open_positions"),
         fetchTable<Signal>("signals"),
-        fetchTable<Trade>("trades"),
-        fetchTable<CycleLog>("cycle_logs"),
+        fetchTable<Trade>("trades", "timestamp.desc", 100),
+        fetchTable<CycleLog>("cycle_logs", "timestamp.desc", 200),
       ]);
       const snap = p?.[0] ?? null;
       setPortfolio(snap);
       setPositions(pos ?? []);
       setSignals(sig ?? []);
       setTrades(tr ?? []);
-      const sortedLogs = (lg ?? []).sort((a, b) => new Date(b.timestamp ?? 0).getTime() - new Date(a.timestamp ?? 0).getTime());
-      setLogs(sortedLogs);
+      // Deduplicate logs by id to prevent duplicates from realtime + polling overlap
+      setLogs((prev) => {
+        const incoming = lg ?? [];
+        const existingIds = new Set(prev.map((l) => l.id));
+        const merged = [
+          ...incoming,
+          ...prev.filter((l) => !incoming.some((i) => i.id === l.id)),
+        ];
+        // Sort by timestamp desc, keep latest 200
+        return merged
+          .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+          .slice(0, 200);
+      });
       setConnectionError(false);
       if (snap?.equity != null) {
         setEquityHistory((prev) => {
@@ -137,7 +152,6 @@ export default function useSupabaseData(): SupabaseData {
         });
       }
       setLastUpdate(new Date());
-      // silent refresh — no toast
       isFirst.current = false;
     } catch {
       setConnectionError(true);
@@ -149,26 +163,38 @@ export default function useSupabaseData(): SupabaseData {
 
   useEffect(() => {
     fetchAll();
-    const interval = setInterval(fetchAll, 5000);
+    const interval = setInterval(fetchAll, 10000);
 
     const channel = supabase
-      .channel("portfolio-realtime")
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "portfolio_snapshot" },
-        (payload) => {
-          const snap = payload.new as Portfolio;
-          setPortfolio(snap);
-          setLastUpdate(new Date());
-          setConnectionError(false);
-          if (snap?.equity != null) {
-            setEquityHistory((prev) => {
-              const next = [...prev, snap.equity!];
-              return next.length > 40 ? next.slice(-40) : next;
-            });
-          }
+      .channel("neurotrade-live")
+      .on("postgres_changes", { event: "*", schema: "public", table: "portfolio_snapshot" }, (payload) => {
+        const snap = payload.new as Portfolio;
+        setPortfolio(snap);
+        setLastUpdate(new Date());
+        setConnectionError(false);
+        if (snap?.equity != null) {
+          setEquityHistory((prev) => {
+            const next = [...prev, snap.equity!];
+            return next.length > 40 ? next.slice(-40) : next;
+          });
         }
-      )
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "open_positions" }, () => {
+        fetchTable<Position>("open_positions").then(setPositions).catch(() => {});
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "signals" }, () => {
+        fetchTable<Signal>("signals").then(setSignals).catch(() => {});
+      })
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "trades" }, (payload) => {
+        setTrades((prev) => [payload.new as Trade, ...prev].slice(0, 100));
+      })
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "cycle_logs" }, (payload) => {
+        const newLog = payload.new as CycleLog;
+        setLogs((prev) => {
+          if (prev.some((l) => l.id === newLog.id)) return prev; // skip duplicate
+          return [newLog, ...prev].slice(0, 200);
+        });
+      })
       .subscribe();
 
     return () => {
