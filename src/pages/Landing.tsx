@@ -3,6 +3,24 @@ import { Link } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
 import logo from "@/assets/logo.png";
 
+// Stock logos
+import logoAAPL from "@/assets/logos/aapl.png";
+import logoMSFT from "@/assets/logos/msft.png";
+import logoNVDA from "@/assets/logos/nvda.png";
+import logoTSLA from "@/assets/logos/tsla.png";
+import logoGOOGL from "@/assets/logos/googl.png";
+import logoAMZN from "@/assets/logos/amzn.png";
+import logoMETA from "@/assets/logos/meta.png";
+import logoAMD from "@/assets/logos/amd.png";
+
+// Feature icons
+import iconShield from "@/assets/icons/shield.png";
+import iconChart from "@/assets/icons/chart-bars.png";
+import iconGlobe from "@/assets/icons/globe.png";
+import iconTrailing from "@/assets/icons/trailing.png";
+import iconSizing from "@/assets/icons/sizing.png";
+import iconBell from "@/assets/icons/bell.png";
+
 /* ── Animated counter hook ── */
 function useCounter(end: number, duration = 2000, startOnView = true) {
   const [count, setCount] = useState(0);
@@ -48,14 +66,14 @@ function Reveal({ children, className = "", delay = 0 }: { children: React.React
 
 /* ── Data ── */
 const symbols = [
-  { ticker: "AAPL", name: "Apple Inc.", color: "from-[#555] to-[#333]" },
-  { ticker: "MSFT", name: "Microsoft", color: "from-[#0078d4] to-[#005a9e]" },
-  { ticker: "NVDA", name: "NVIDIA", color: "from-[#76b900] to-[#5a8f00]" },
-  { ticker: "TSLA", name: "Tesla Inc.", color: "from-[#cc0000] to-[#990000]" },
-  { ticker: "GOOGL", name: "Alphabet", color: "from-[#4285f4] to-[#2b6cb0]" },
-  { ticker: "AMZN", name: "Amazon", color: "from-[#ff9900] to-[#cc7a00]" },
-  { ticker: "META", name: "Meta Platforms", color: "from-[#1877f2] to-[#0d5bbf]" },
-  { ticker: "AMD", name: "AMD Inc.", color: "from-[#ed1c24] to-[#b8161c]" },
+  { ticker: "AAPL", name: "Apple Inc.", logo: logoAAPL, bg: "bg-[#1a1a1a]" },
+  { ticker: "MSFT", name: "Microsoft", logo: logoMSFT, bg: "bg-[#00a4ef]/10" },
+  { ticker: "NVDA", name: "NVIDIA", logo: logoNVDA, bg: "bg-[#76b900]/10" },
+  { ticker: "TSLA", name: "Tesla Inc.", logo: logoTSLA, bg: "bg-[#cc0000]/10" },
+  { ticker: "GOOGL", name: "Alphabet", logo: logoGOOGL, bg: "bg-[#4285f4]/10" },
+  { ticker: "AMZN", name: "Amazon", logo: logoAMZN, bg: "bg-[#ff9900]/10" },
+  { ticker: "META", name: "Meta Platforms", logo: logoMETA, bg: "bg-[#1877f2]/10" },
+  { ticker: "AMD", name: "AMD Inc.", logo: logoAMD, bg: "bg-[#ed1c24]/10" },
 ];
 
 const howItWorks = [
@@ -65,12 +83,12 @@ const howItWorks = [
 ];
 
 const features = [
-  { emoji: "🛡️", title: "Stop Loss / Take Profit", desc: "Fiecare poziție protejată automat cu SL -5% și TP +12%." },
-  { emoji: "📊", title: "RSI + MACD + EMA", desc: "Indicatori tehnici calculați în timp real pentru semnale precise." },
-  { emoji: "🌍", title: "Market Regime Detection", desc: "Analiză SPY pentru detectare trend: Bull, Bear, Volatile." },
-  { emoji: "📌", title: "Trailing Stop Dinamic", desc: "Urmărește prețul și vinde automat la -4% de la maxim." },
-  { emoji: "📈", title: "Kelly Position Sizing", desc: "Mărimea pozițiilor calculată matematic pentru randament optim." },
-  { emoji: "🔔", title: "Notificări Telegram", desc: "Alerte instant pentru fiecare tranzacție și event important." },
+  { icon: iconShield, title: "Stop Loss / Take Profit", desc: "Fiecare poziție protejată automat cu SL -5% și TP +12%." },
+  { icon: iconChart, title: "RSI + MACD + EMA", desc: "Indicatori tehnici calculați în timp real pentru semnale precise." },
+  { icon: iconGlobe, title: "Market Regime Detection", desc: "Analiză SPY pentru detectare trend: Bull, Bear, Volatile." },
+  { icon: iconTrailing, title: "Trailing Stop Dinamic", desc: "Urmărește prețul și vinde automat la -4% de la maxim." },
+  { icon: iconSizing, title: "Kelly Position Sizing", desc: "Mărimea pozițiilor calculată matematic pentru randament optim." },
+  { icon: iconBell, title: "Notificări Telegram", desc: "Alerte instant pentru fiecare tranzacție și event important." },
 ];
 
 /* ── Mini sparkline SVG ── */
