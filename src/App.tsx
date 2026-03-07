@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import useSupabaseData from "@/hooks/useSupabaseData";
 import Layout from "@/components/Layout";
 import LandingPage from "@/pages/Landing";
@@ -16,29 +16,25 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-function PageTransition({ children }: { children: React.ReactNode }) {
+function AnimatedRoutes() {
   const location = useLocation();
-  const [displayChildren, setDisplayChildren] = useState(children);
-  const [opacity, setOpacity] = useState(1);
-  const prevKey = useRef(location.pathname);
+  const [visible, setVisible] = useState(true);
+  const prevPath = useRef(location.pathname);
 
   useEffect(() => {
-    if (location.pathname !== prevKey.current) {
-      setOpacity(0);
+    if (location.pathname !== prevPath.current) {
+      setVisible(false);
       const t = setTimeout(() => {
-        setDisplayChildren(children);
-        setOpacity(1);
-        prevKey.current = location.pathname;
+        setVisible(true);
+        prevPath.current = location.pathname;
       }, 150);
       return () => clearTimeout(t);
-    } else {
-      setDisplayChildren(children);
     }
-  }, [location.pathname, children]);
+  }, [location.pathname]);
 
   return (
-    <div className="transition-opacity duration-150" style={{ opacity }}>
-      {displayChildren}
+    <div className="transition-opacity duration-150" style={{ opacity: visible ? 1 : 0 }}>
+      <AppRoutes />
     </div>
   );
 }
@@ -95,9 +91,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <PageTransition>
-          <AppRoutes />
-        </PageTransition>
+        <AnimatedRoutes />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
