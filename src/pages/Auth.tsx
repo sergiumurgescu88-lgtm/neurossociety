@@ -1,11 +1,13 @@
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import useAuth from "@/hooks/useAuth";
-import { Loader2 } from "lucide-react";
-import { useEffect } from "react";
+import { Loader2, Mail } from "lucide-react";
+
+type Mode = "signin" | "signup" | "check-email";
 
 export default function AuthPage() {
+  const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -24,16 +26,35 @@ export default function AuthPage() {
     setError("");
     setIsLoading(true);
 
-    const { error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (authError) {
-      setError(authError.message);
-      setIsLoading(false);
+    if (mode === "signup") {
+      if (password.length < 6) {
+        setError("Parola trebuie să aibă minim 6 caractere");
+        setIsLoading(false);
+        return;
+      }
+      const { error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: window.location.origin + "/dashboard" },
+      });
+      if (signUpError) {
+        setError(signUpError.message);
+        setIsLoading(false);
+      } else {
+        setMode("check-email");
+        setIsLoading(false);
+      }
     } else {
-      navigate("/dashboard", { replace: true });
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (authError) {
+        setError(authError.message);
+        setIsLoading(false);
+      } else {
+        navigate("/dashboard", { replace: true });
+      }
     }
   };
 
@@ -45,15 +66,41 @@ export default function AuthPage() {
     );
   }
 
+  if (mode === "check-email") {
+    return (
+      <div className="min-h-screen bg-background relative flex items-center justify-center px-4">
+        <div className="fixed inset-0 z-0 pointer-events-none bg-grid-pattern opacity-[0.03]" />
+        <div className="relative z-10 w-full max-w-[400px]">
+          <div className="bg-card border border-border-subtle rounded-xl p-8 shadow-lg shadow-black/20 text-center">
+            <Mail className="w-12 h-12 text-accent mx-auto mb-4" />
+            <h2 className="font-heading text-lg font-semibold mb-2">Verifică emailul</h2>
+            <p className="text-sm text-muted-foreground mb-1">
+              Am trimis un link de confirmare la:
+            </p>
+            <p className="text-sm text-accent font-mono mb-6">{email}</p>
+            <p className="text-xs text-muted-foreground mb-6">
+              Dă click pe linkul din email pentru a-ți activa contul. Verifică și folderul Spam.
+            </p>
+            <button
+              onClick={() => { setMode("signin"); setError(""); }}
+              className="text-xs text-accent hover:underline"
+            >
+              ← Înapoi la Sign In
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background relative flex items-center justify-center px-4">
-      {/* Background grid */}
       <div className="fixed inset-0 z-0 pointer-events-none bg-grid-pattern opacity-[0.03]" />
 
       <div className="relative z-10 w-full max-w-[400px]">
         <div className="bg-card border border-border-subtle rounded-xl p-8 shadow-lg shadow-black/20">
           {/* Logo */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-6">
             <span className="text-4xl mb-3 block">🤖</span>
             <h1 className="font-heading text-xl font-bold tracking-tight">
               Neuro<span className="text-accent">SS</span>ociety
@@ -63,8 +110,31 @@ export default function AuthPage() {
             </p>
           </div>
 
-          <h2 className="font-heading text-lg font-semibold text-center mb-1">Welcome back</h2>
-          <p className="text-xs text-muted-foreground text-center mb-6">Access is by invitation only</p>
+          {/* Tab toggle */}
+          <div className="flex mb-6 bg-secondary rounded-lg p-1">
+            <button
+              type="button"
+              onClick={() => { setMode("signin"); setError(""); }}
+              className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors duration-150 ${
+                mode === "signin"
+                  ? "bg-accent text-accent-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Sign In
+            </button>
+            <button
+              type="button"
+              onClick={() => { setMode("signup"); setError(""); }}
+              className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors duration-150 ${
+                mode === "signup"
+                  ? "bg-accent text-accent-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Create Account
+            </button>
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -80,19 +150,22 @@ export default function AuthPage() {
             </div>
 
             <div>
-              <label className="block text-xs text-muted-foreground mb-1.5 font-body">Password</label>
+              <label className="block text-xs text-muted-foreground mb-1.5 font-body">
+                {mode === "signup" ? "Parolă (minim 6 caractere)" : "Password"}
+              </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                minLength={mode === "signup" ? 6 : undefined}
                 className="w-full px-3 py-2.5 rounded-lg bg-secondary border border-border-subtle text-foreground text-sm font-body placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent transition-colors duration-150"
                 placeholder="••••••••"
               />
             </div>
 
             {error && (
-              <p className="text-xs text-danger bg-danger-dim rounded-lg px-3 py-2">{error}</p>
+              <p className="text-xs text-destructive bg-destructive/10 rounded-lg px-3 py-2">{error}</p>
             )}
 
             <button
@@ -101,7 +174,9 @@ export default function AuthPage() {
               className="w-full py-2.5 rounded-lg bg-accent text-accent-foreground text-sm font-medium hover:bg-accent/90 transition-colors duration-150 disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-              {isLoading ? "Signing in..." : "Sign In"}
+              {mode === "signup"
+                ? isLoading ? "Se creează..." : "Creează cont"
+                : isLoading ? "Signing in..." : "Sign In"}
             </button>
           </form>
         </div>
