@@ -137,9 +137,7 @@ export default function useSupabaseData(): SupabaseData {
         });
       }
       setLastUpdate(new Date());
-      if (!isFirst.current) {
-        toast.success("Data refreshed", { duration: 1500 });
-      }
+      // silent refresh — no toast
       isFirst.current = false;
     } catch {
       setConnectionError(true);
