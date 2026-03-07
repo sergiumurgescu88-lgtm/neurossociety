@@ -52,6 +52,10 @@ export default function PositionsPage({ positions, loading }: PositionsPageProps
               ? Math.min(Math.max(((pos.current_price - pos.avg_entry) / (pos.take_profit - pos.avg_entry)) * 100, 0), 100)
               : 0;
 
+            // Distance to SL and TP
+            const slDistance = pos.current_price && pos.stop_loss ? pos.current_price - pos.stop_loss : null;
+            const tpDistance = pos.current_price && pos.take_profit ? pos.take_profit - pos.current_price : null;
+
             return (
               <div
                 key={pos.id}
@@ -90,10 +94,20 @@ export default function PositionsPage({ positions, loading }: PositionsPageProps
                     </div>
                   </div>
 
-                  {/* SL/TP */}
-                  <div className="lg:w-36 flex lg:flex-col gap-3 lg:gap-1 text-xs">
-                    <span className="text-danger font-mono">SL: {formatCurrencyPlain(pos.stop_loss)}</span>
-                    <span className="text-accent font-mono">TP: {formatCurrencyPlain(pos.take_profit)}</span>
+                  {/* SL/TP with distance */}
+                  <div className="lg:w-44 flex lg:flex-col gap-3 lg:gap-1.5 text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="text-danger font-mono">SL: {formatCurrencyPlain(pos.stop_loss)}</span>
+                      {slDistance != null && (
+                        <span className="text-danger/70 font-mono">(-{formatCurrencyPlain(Math.abs(slDistance))} away)</span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-accent font-mono">TP: {formatCurrencyPlain(pos.take_profit)}</span>
+                      {tpDistance != null && (
+                        <span className="text-accent/70 font-mono">(+{formatCurrencyPlain(Math.abs(tpDistance))} away)</span>
+                      )}
+                    </div>
                   </div>
                 </div>
 

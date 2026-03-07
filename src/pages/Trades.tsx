@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { formatCurrencyPlain, formatCurrency } from "@/lib/format";
 import { format } from "date-fns";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
 interface TradesPageProps {
   trades: any[];
@@ -29,6 +30,15 @@ export default function TradesPage({ trades, loading }: TradesPageProps) {
   const totalPl = sellTrades.reduce((s, t) => s + (t.pl ?? 0), 0);
   const bestTrade = sellTrades.length > 0 ? Math.max(...sellTrades.map(t => t.pl ?? 0)) : 0;
 
+  // P&L chart data - last 10 sell trades
+  const plChartData = [...sellTrades]
+    .sort((a, b) => new Date(a.timestamp ?? 0).getTime() - new Date(b.timestamp ?? 0).getTime())
+    .slice(-10)
+    .map((t, i) => ({
+      name: t.symbol ?? `#${i + 1}`,
+      pl: t.pl ?? 0,
+    }));
+
   const typeColors: Record<string, string> = {
     SIGNAL: "bg-blue-500/10 text-blue-400",
     STOP_LOSS: "bg-danger-dim text-danger",
@@ -52,6 +62,28 @@ export default function TradesPage({ trades, loading }: TradesPageProps) {
           </div>
         ))}
       </div>
+
+      {/* P&L Bar Chart */}
+      {plChartData.length > 0 && (
+        <div className="bg-card border border-border-subtle rounded-xl p-5 shadow-lg shadow-black/20">
+          <h3 className="font-heading text-sm font-semibold mb-3">P&L per Trade (Last 10)</h3>
+          <ResponsiveContainer width="100%" height={120}>
+            <BarChart data={plChartData}>
+              <XAxis dataKey="name" tick={{ fontSize: 10, fill: "hsl(218,11%,65%)" }} axisLine={false} tickLine={false} />
+              <YAxis hide />
+              <Tooltip
+                contentStyle={{ background: "hsl(217,33%,11%)", border: "1px solid hsl(215,19%,17%)", borderRadius: 8, fontSize: 12 }}
+                formatter={(v: number) => [formatCurrency(v), "P&L"]}
+              />
+              <Bar dataKey="pl" radius={[4, 4, 0, 0]}>
+                {plChartData.map((entry, idx) => (
+                  <Cell key={idx} fill={entry.pl >= 0 ? "hsl(160,84%,39%)" : "hsl(0,84%,60%)"} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
 
       {/* Table */}
       <div className="bg-card border border-border-subtle rounded-xl shadow-lg shadow-black/20 overflow-hidden">

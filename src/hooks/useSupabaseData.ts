@@ -78,22 +78,19 @@ export interface SupabaseData {
   loading: boolean;
   lastUpdate: Date | null;
   isSyncing: boolean;
+  connectionError: boolean;
   refresh: () => void;
 }
 
 async function fetchTable<T>(table: string): Promise<T[]> {
-  try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*`, {
-      headers: {
-        apikey: SUPABASE_KEY,
-        Authorization: `Bearer ${SUPABASE_KEY}`,
-      },
-    });
-    if (!res.ok) return [];
-    return res.json();
-  } catch {
-    return [];
-  }
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*`, {
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+    },
+  });
+  if (!res.ok) throw new Error(`Failed to fetch ${table}`);
+  return res.json();
 }
 
 export default function useSupabaseData(): SupabaseData {
@@ -105,6 +102,7 @@ export default function useSupabaseData(): SupabaseData {
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [connectionError, setConnectionError] = useState(false);
   const isFirst = useRef(true);
 
   const fetchAll = useCallback(async () => {
@@ -121,6 +119,7 @@ export default function useSupabaseData(): SupabaseData {
       setPositions(pos ?? []);
       setSignals(sig ?? []);
       setTrades(tr ?? []);
+      setConnectionError(false);
       if (snap?.equity != null) {
         setEquityHistory((prev) => {
           const next = [...prev, snap.equity!];
@@ -133,7 +132,7 @@ export default function useSupabaseData(): SupabaseData {
       }
       isFirst.current = false;
     } catch {
-      // silent fail
+      setConnectionError(true);
     } finally {
       setLoading(false);
       setIsSyncing(false);
@@ -144,7 +143,6 @@ export default function useSupabaseData(): SupabaseData {
     fetchAll();
     const interval = setInterval(fetchAll, 10000);
 
-    // Real-time subscription for portfolio_snapshot
     const channel = supabase
       .channel("portfolio-realtime")
       .on(
@@ -154,6 +152,7 @@ export default function useSupabaseData(): SupabaseData {
           const snap = payload.new as Portfolio;
           setPortfolio(snap);
           setLastUpdate(new Date());
+          setConnectionError(false);
           if (snap?.equity != null) {
             setEquityHistory((prev) => {
               const next = [...prev, snap.equity!];
@@ -170,5 +169,5 @@ export default function useSupabaseData(): SupabaseData {
     };
   }, [fetchAll]);
 
-  return { portfolio, positions, signals, trades, equityHistory, loading, lastUpdate, isSyncing, refresh: fetchAll };
+  return { portfolio, positions, signals, trades, equityHistory, loading, lastUpdate, isSyncing, connectionError, refresh: fetchAll };
 }

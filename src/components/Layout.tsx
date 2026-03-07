@@ -11,10 +11,11 @@ interface LayoutProps {
   lastUpdate: Date | null;
   isSyncing: boolean;
   onRefresh: () => void;
+  connectionError?: boolean;
 }
 
 const pageTitles: Record<string, string> = {
-  "/": "Dashboard",
+  "/dashboard": "Dashboard",
   "/positions": "Positions",
   "/signals": "AI Signals",
   "/trades": "Trade History",
@@ -22,14 +23,14 @@ const pageTitles: Record<string, string> = {
 };
 
 const navItems = [
-  { path: "/", label: "Dashboard", emoji: "📊" },
+  { path: "/dashboard", label: "Dashboard", emoji: "📊" },
   { path: "/positions", label: "Positions", emoji: "📈" },
   { path: "/signals", label: "AI Signals", emoji: "🤖" },
   { path: "/trades", label: "Trade History", emoji: "📋" },
   { path: "/settings", label: "Settings", emoji: "⚙️" },
 ];
 
-export default function Layout({ children, portfolio, lastUpdate, isSyncing, onRefresh }: LayoutProps) {
+export default function Layout({ children, portfolio, lastUpdate, isSyncing, onRefresh, connectionError }: LayoutProps) {
   const location = useLocation();
   const title = pageTitles[location.pathname] || "Dashboard";
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -101,6 +102,15 @@ export default function Layout({ children, portfolio, lastUpdate, isSyncing, onR
           onMenuToggle={() => setMobileMenuOpen(true)}
           marketTrend={portfolio?.market_trend}
         />
+
+        {/* Connection error banner */}
+        {connectionError && (
+          <div className="mx-4 lg:mx-6 mt-4 bg-warning-dim border border-warning/20 rounded-lg p-3 flex items-center gap-2 animate-fade-in">
+            <span>⚠️</span>
+            <span className="text-warning text-sm font-medium">Connection issue — retrying...</span>
+          </div>
+        )}
+
         {portfolio?.safe_mode && (
           <div className="mx-4 lg:mx-6 mt-4 bg-warning-dim border border-warning/20 rounded-lg p-3 flex items-center gap-2">
             <span>⚠️</span>
