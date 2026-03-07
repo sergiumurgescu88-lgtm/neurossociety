@@ -1,5 +1,6 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { formatCurrencyPlain, formatCurrency } from "@/lib/format";
+import logo from "@/assets/logo.png";
 import { LogOut } from "lucide-react";
 
 interface SidebarProps {
@@ -27,7 +28,7 @@ export default function AppSidebar({ portfolio, userEmail, onSignOut }: SidebarP
       {/* Logo */}
       <div className="p-6 pb-2">
         <div className="flex items-center gap-2">
-          <span className="text-2xl">🤖</span>
+          <img src={logo} alt="NeuroSSociety Logo" className="w-8 h-8 object-contain" />
           <h1 className="font-heading text-xl font-bold tracking-tight">
             Neuro<span className="text-accent">SS</span>ociety
           </h1>
