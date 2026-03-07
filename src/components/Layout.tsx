@@ -97,6 +97,12 @@ export default function Layout({ children, portfolio, lastUpdate, isSyncing, onR
           onRefresh={onRefresh}
           onMenuToggle={() => setMobileMenuOpen(true)}
         />
+        {portfolio?.safe_mode && (
+          <div className="mx-4 lg:mx-6 mt-4 bg-warning-dim border border-warning/20 rounded-lg p-3 flex items-center gap-2">
+            <span>⚠️</span>
+            <span className="text-warning text-sm font-medium">SAFE MODE ACTIVE — Market conditions unfavorable. Bot is not buying.</span>
+          </div>
+        )}
         <main className="flex-1 p-4 lg:p-6 pb-24 lg:pb-6">
           {children}
         </main>

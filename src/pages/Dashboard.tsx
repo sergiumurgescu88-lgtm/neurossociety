@@ -40,6 +40,9 @@ export default function Dashboard({ portfolio, positions, signals, trades, equit
   const winRate = sellTrades.length > 0 ? (wins / sellTrades.length) * 100 : 0;
 
   const chartData = equityHistory.map((v, i) => ({ idx: i, equity: v }));
+  const eqMin = Math.min(...equityHistory);
+  const eqMax = Math.max(...equityHistory);
+  const allSame = eqMin === eqMax;
 
   const topSignals = [...signals].sort((a: any, b: any) => (b.confidence ?? 0) - (a.confidence ?? 0)).slice(0, 8);
 
@@ -69,10 +72,10 @@ export default function Dashboard({ portfolio, positions, signals, trades, equit
         {/* Win Rate */}
         <div className="bg-card border border-border-subtle rounded-xl p-5 shadow-lg shadow-black/20">
           <p className="text-xs text-muted-foreground font-body mb-1">Win Rate</p>
-          <p className={`text-2xl font-mono font-semibold ${winRate >= 50 ? "text-accent" : winRate >= 40 ? "text-warning" : "text-danger"}`}>
+          <p className={`text-2xl font-mono font-semibold ${sellTrades.length === 0 ? "text-muted-foreground" : winRate >= 50 ? "text-accent" : winRate >= 40 ? "text-warning" : "text-danger"}`}>
             {winRate.toFixed(1)}%
           </p>
-          <p className="text-xs text-muted-foreground mt-1">{wins}W / {losses}L / {sellTrades.length} Total</p>
+          <p className="text-xs text-muted-foreground mt-1">{sellTrades.length === 0 ? "No closed trades yet" : `${wins}W / ${losses}L / ${sellTrades.length} Total`}</p>
         </div>
 
         {/* Realized P&L */}
@@ -95,6 +98,8 @@ export default function Dashboard({ portfolio, positions, signals, trades, equit
           </div>
           {chartData.length < 2 ? (
             <div className="h-[200px] flex items-center justify-center text-muted-foreground text-sm">Collecting data...</div>
+          ) : allSame ? (
+            <div className="h-[200px] flex items-center justify-center text-muted-foreground text-sm">Waiting for equity changes...</div>
           ) : (
             <ResponsiveContainer width="100%" height={200}>
               <AreaChart data={chartData}>
@@ -104,7 +109,7 @@ export default function Dashboard({ portfolio, positions, signals, trades, equit
                     <stop offset="100%" stopColor="hsl(160,84%,39%)" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <YAxis domain={["auto", "auto"]} hide />
+                <YAxis domain={[eqMin * 0.999, eqMax * 1.001]} hide />
                 <XAxis dataKey="idx" hide />
                 <Tooltip
                   contentStyle={{ background: "hsl(217,33%,11%)", border: "1px solid hsl(215,19%,17%)", borderRadius: 8, fontSize: 12 }}

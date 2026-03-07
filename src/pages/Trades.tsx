@@ -89,8 +89,12 @@ export default function TradesPage({ trades, loading }: TradesPageProps) {
                         {t.action}
                       </span>
                     </td>
-                    <td className="p-4 font-mono text-xs">{t.qty} @ {formatCurrencyPlain(t.price)}</td>
-                    <td className="p-4 font-mono text-xs hidden md:table-cell">{formatCurrencyPlain(t.value)}</td>
+                    <td className="p-4 font-mono text-xs">
+                      {t.qty ? `${t.qty} @ ` : ""}{formatCurrencyPlain(t.price)}
+                    </td>
+                    <td className="p-4 font-mono text-xs hidden md:table-cell">
+                      {(t.qty && t.price) ? formatCurrencyPlain(t.qty * t.price) : t.value ? formatCurrencyPlain(t.value) : "—"}
+                    </td>
                     <td className="p-4 hidden lg:table-cell">
                       {t.close_type && (
                         <span className={`text-xs px-2 py-0.5 rounded-full ${typeColors[t.close_type] ?? "bg-secondary text-muted-foreground"}`}>
