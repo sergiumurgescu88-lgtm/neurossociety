@@ -1,11 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { createClient } from "@supabase/supabase-js";
 import { toast } from "sonner";
+import { supabase } from "@/lib/supabase";
 
 const SUPABASE_URL = "https://lgrllhsfgvnngtmlwwug.supabase.co";
 const SUPABASE_KEY = "sb_publishable_KtQkZ2_nx8rR65ypG9ZWSw_AjVWWX-N";
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 interface Portfolio {
   id?: string;
