@@ -34,6 +34,17 @@ export default function TradesPage({ trades, loading }: TradesPageProps) {
   const totalPl = sellTrades.reduce((s, t) => s + (t.pl ?? 0), 0);
   const bestTrade = sellTrades.length > 0 ? Math.max(...sellTrades.map(t => t.pl ?? 0)) : 0;
 
+  // Pie chart data - investment distribution by symbol
+  const PIE_COLORS = ["hsl(160,84%,39%)", "hsl(217,91%,60%)", "hsl(280,65%,60%)", "hsl(38,92%,50%)", "hsl(0,84%,60%)", "hsl(190,80%,45%)", "hsl(330,70%,55%)", "hsl(120,60%,40%)", "hsl(50,90%,55%)", "hsl(260,50%,65%)"];
+  const symbolMap = new Map<string, number>();
+  buyTrades.forEach(t => {
+    const val = t.value || (t.qty ?? 0) * (t.price ?? 0);
+    symbolMap.set(t.symbol, (symbolMap.get(t.symbol) ?? 0) + val);
+  });
+  const pieData = [...symbolMap.entries()]
+    .map(([name, value]) => ({ name, value: Math.round(value * 100) / 100 }))
+    .sort((a, b) => b.value - a.value);
+
   // P&L chart data - last 10 sell trades
   const plChartData = [...sellTrades]
     .sort((a, b) => new Date(a.timestamp ?? 0).getTime() - new Date(b.timestamp ?? 0).getTime())
