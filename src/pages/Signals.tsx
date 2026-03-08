@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { formatCurrencyPlain, timeAgo } from "@/lib/format";
-import { analyzeWatchlist } from "@/lib/gemini-service";
-import { toast } from "sonner";
+import useAiSignals, { type AiSignal } from "@/hooks/useAiSignals";
 
 interface SignalsPageProps {
   signals: any[];
@@ -10,26 +9,9 @@ interface SignalsPageProps {
 
 export default function SignalsPage({ signals, loading }: SignalsPageProps) {
   const [filter, setFilter] = useState("ALL");
-  const [aiSignals, setAiSignals] = useState<any[]>([]);
-  const [analyzing, setAnalyzing] = useState(false);
-  const [lastAnalysis, setLastAnalysis] = useState<string | null>(null);
+  const { aiSignals, loading: aiLoading, analyzing, runAnalysis } = useAiSignals();
 
-  const handleAnalyze = async () => {
-    setAnalyzing(true);
-    try {
-      const result = await analyzeWatchlist();
-      setAiSignals(result.signals);
-      setLastAnalysis(result.generatedAt);
-      toast.success(`AI analyzed ${result.signals.length} symbols via ${result.model}`);
-    } catch (err: any) {
-      toast.error(err.message || "AI analysis failed");
-      console.error("AI analysis error:", err);
-    } finally {
-      setAnalyzing(false);
-    }
-  };
-
-  if (loading) {
+  if (loading && aiLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {[1,2,3,4].map(i => (
@@ -54,37 +36,40 @@ export default function SignalsPage({ signals, loading }: SignalsPageProps) {
     ? (allSignals.reduce((sum, s) => sum + (s.confidence ?? 0), 0) / allSignals.length).toFixed(1)
     : "0.0";
 
+  // Group AI signals by batch (created_at within same minute)
+  const latestBatchTime = aiSignals[0]?.created_at;
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="font-heading text-xl font-bold">AI Signals</h1>
-        <p className="text-sm text-muted-foreground">Gemini 2.0 Flash analysis — refreshes every cycle</p>
+        <p className="text-sm text-muted-foreground">Gemini 2.5 Flash analysis — persisted across sessions</p>
       </div>
 
       {/* AI Analysis button */}
       <div className="flex items-center gap-3">
         <button
-          onClick={handleAnalyze}
+          onClick={runAnalysis}
           disabled={analyzing}
           className="px-4 py-2 rounded-lg bg-accent text-accent-foreground text-sm font-medium hover:bg-accent/90 transition-colors disabled:opacity-50"
         >
           {analyzing ? "Analyzing…" : "🤖 Run AI Analysis"}
         </button>
-        {lastAnalysis && (
-          <span className="text-xs text-muted-foreground">Last: {new Date(lastAnalysis).toLocaleTimeString()}</span>
+        {latestBatchTime && (
+          <span className="text-xs text-muted-foreground">Last: {new Date(latestBatchTime).toLocaleTimeString()}</span>
         )}
         {aiSignals.length > 0 && (
-          <span className="text-xs text-accent font-medium">{aiSignals.length} AI signals</span>
+          <span className="text-xs text-accent font-medium">{aiSignals.length} saved signals</span>
         )}
       </div>
 
       {/* AI Signals Section */}
       {aiSignals.length > 0 && (
         <div className="space-y-3">
-          <h2 className="font-heading text-sm font-semibold text-accent">AI-Generated Signals</h2>
+          <h2 className="font-heading text-sm font-semibold text-accent">AI-Generated Signals (Persisted)</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {aiSignals.map((s: any, i: number) => (
-              <SignalCard key={`ai-${i}`} signal={{ ...s, id: `ai-${i}`, price: 0, updated_at: lastAnalysis }} />
+            {aiSignals.map((s) => (
+              <AiSignalCard key={s.id} signal={s} />
             ))}
           </div>
         </div>
@@ -137,6 +122,70 @@ export default function SignalsPage({ signals, loading }: SignalsPageProps) {
   );
 }
 
+function AiSignalCard({ signal: s }: { signal: AiSignal }) {
+  const [expanded, setExpanded] = useState(false);
+  const confColor = s.confidence >= 80 ? "bg-accent" : s.confidence >= 65 ? "bg-warning" : "bg-danger";
+  const actionStyles: Record<string, string> = {
+    BUY: "bg-accent-dim text-accent",
+    SELL: "bg-danger-dim text-danger",
+    HOLD: "bg-secondary text-muted-foreground",
+  };
+  const riskColors: Record<string, string> = {
+    LOW: "bg-accent-dim text-accent",
+    MEDIUM: "bg-warning-dim text-warning",
+    HIGH: "bg-danger-dim text-danger",
+  };
+
+  return (
+    <div className="relative bg-card border border-border-subtle rounded-xl p-5 shadow-lg shadow-black/20 hover:bg-card-hover transition-colors duration-150">
+      <div className="flex items-center justify-between mb-4">
+        <span className="font-heading text-lg font-bold">{s.symbol}</span>
+        <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${actionStyles[s.action] ?? actionStyles.HOLD}`}>{s.action}</span>
+      </div>
+
+      <div className="mb-4">
+        <div className="flex justify-between text-xs mb-1">
+          <span className="text-muted-foreground">AI Confidence</span>
+          <span className="font-mono">{s.confidence}%</span>
+        </div>
+        <div className="h-2 bg-secondary rounded-full overflow-hidden">
+          <div className={`h-full rounded-full transition-all duration-500 ${confColor}`} style={{ width: `${s.confidence}%` }} />
+        </div>
+      </div>
+
+      <div className="flex flex-wrap gap-2 mb-3">
+        <span className={`text-xs px-2 py-1 rounded-md bg-secondary font-mono ${(s.rsi ?? 50) < 30 ? "text-accent" : (s.rsi ?? 50) > 70 ? "text-danger" : "text-muted-foreground"}`}>
+          RSI {s.rsi?.toFixed(1) ?? "—"}
+        </span>
+        <span className={`text-xs px-2 py-1 rounded-md bg-secondary ${s.macd === "bullish" ? "text-accent" : s.macd === "bearish" ? "text-danger" : "text-muted-foreground"}`}>
+          MACD {s.macd ?? "—"}
+        </span>
+        <span className={`text-xs px-2 py-1 rounded-md bg-secondary ${s.ema_trend === "bullish" ? "text-accent" : s.ema_trend === "bearish" ? "text-danger" : "text-muted-foreground"}`}>
+          EMA {s.ema_trend ?? "—"}
+        </span>
+      </div>
+
+      <div className="flex items-center justify-between mb-2">
+        {s.risk_level && (
+          <span className={`text-xs px-2 py-0.5 rounded-full ${riskColors[s.risk_level.toUpperCase()] ?? riskColors.MEDIUM}`}>
+            {s.risk_level.toUpperCase()} RISK
+          </span>
+        )}
+        <span className="text-xs text-muted-foreground">{timeAgo(s.created_at)}</span>
+      </div>
+
+      {s.reasoning && (
+        <div className="mt-3">
+          <p className={`text-xs text-muted-foreground italic whitespace-pre-line ${expanded ? "" : "line-clamp-2"}`}>{s.reasoning}</p>
+          <button onClick={() => setExpanded(!expanded)} className="text-xs text-accent mt-1 hover:underline">
+            {expanded ? "Show less" : "Show more"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function SignalCard({ signal: s }: { signal: any }) {
   const [expanded, setExpanded] = useState(false);
   const confColor = (s.confidence ?? 0) >= 80 ? "bg-accent" : (s.confidence ?? 0) >= 65 ? "bg-warning" : "bg-danger";
@@ -155,7 +204,6 @@ function SignalCard({ signal: s }: { signal: any }) {
 
   return (
     <div className={`relative bg-card border border-border-subtle rounded-xl p-5 shadow-lg shadow-black/20 hover:bg-card-hover transition-colors duration-150 ${isLowConfHold ? "opacity-60" : ""}`}>
-      {/* Top */}
       <div className="flex items-center justify-between mb-4">
         <div>
           <span className="font-heading text-lg font-bold">{s.symbol}</span>
@@ -164,7 +212,6 @@ function SignalCard({ signal: s }: { signal: any }) {
         <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${actionStyles[s.action] ?? actionStyles.HOLD}`}>{s.action}</span>
       </div>
 
-      {/* Confidence */}
       <div className="mb-4">
         <div className="flex justify-between text-xs mb-1">
           <span className="text-muted-foreground">AI Confidence</span>
@@ -175,7 +222,6 @@ function SignalCard({ signal: s }: { signal: any }) {
         </div>
       </div>
 
-      {/* Technical pills */}
       <div className="flex flex-wrap gap-2 mb-3">
         <span className={`text-xs px-2 py-1 rounded-md bg-secondary font-mono ${(s.rsi ?? 50) < 30 ? "text-accent" : (s.rsi ?? 50) > 70 ? "text-danger" : "text-muted-foreground"}`}>
           RSI {s.rsi?.toFixed(1) ?? "—"}
@@ -188,7 +234,6 @@ function SignalCard({ signal: s }: { signal: any }) {
         </span>
       </div>
 
-      {/* Risk + Timestamp */}
       <div className="flex items-center justify-between mb-2">
         {s.risk_level && (
           <span className={`text-xs px-2 py-0.5 rounded-full ${riskColors[s.risk_level?.toUpperCase()] ?? riskColors.MEDIUM}`}>
@@ -200,7 +245,6 @@ function SignalCard({ signal: s }: { signal: any }) {
         )}
       </div>
 
-      {/* Executed / Blocked */}
       {s.executed && (
         <div className="mt-3 bg-accent-dim text-accent text-xs rounded-lg px-3 py-2 font-medium">✓ Trade Executed</div>
       )}
@@ -208,7 +252,6 @@ function SignalCard({ signal: s }: { signal: any }) {
         <p className="mt-2 text-xs text-danger">⛔ {s.block_reason}</p>
       )}
 
-      {/* Reasoning */}
       {s.reasoning && (
         <div className="mt-3">
           <p className={`text-xs text-muted-foreground italic whitespace-pre-line ${expanded ? "" : "line-clamp-2"}`}>{s.reasoning}</p>
