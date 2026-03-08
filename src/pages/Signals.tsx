@@ -108,11 +108,11 @@ export default function SignalsPage({ signals, loading }: SignalsPageProps) {
       </div>
 
       {/* AI Signals Section */}
-      {aiSignals.length > 0 && (
+      {filteredAiSignals.length > 0 && (
         <div className="space-y-3">
           <h2 className="font-heading text-sm font-semibold text-accent">AI-Generated Signals (Persisted)</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {aiSignals.map((s) => (
+            {filteredAiSignals.map((s) => (
               <AiSignalCard key={s.id} signal={s} />
             ))}
           </div>
@@ -123,7 +123,7 @@ export default function SignalsPage({ signals, loading }: SignalsPageProps) {
       <div className="bg-card border border-border-subtle rounded-xl p-4 shadow-lg shadow-black/20 flex flex-wrap items-center gap-4">
         <div className="flex items-center gap-2">
           <span className="text-xs text-muted-foreground">Total:</span>
-          <span className="font-mono text-sm font-semibold">{allSignals.length}</span>
+          <span className="font-mono text-sm font-semibold">{filteredSignals.length}</span>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="text-xs px-2 py-0.5 rounded-full bg-accent-dim text-accent font-medium">BUY {counts.BUY ?? 0}</span>
@@ -137,27 +137,110 @@ export default function SignalsPage({ signals, loading }: SignalsPageProps) {
       </div>
 
       {/* Filters */}
-      <div className="flex gap-2 flex-wrap">
-        {filters.map(f => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors duration-150 ${
-              filter === f ? "bg-accent text-accent-foreground" : "bg-secondary text-muted-foreground hover:bg-card-hover"
-            }`}
-          >
-            {f} <span className="ml-1 opacity-70">{counts[f]}</span>
-          </button>
-        ))}
+      <div className="space-y-4">
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Symbol Filter */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">Simbol:</span>
+            <Select value={symbolFilter} onValueChange={setSymbolFilter}>
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder="Toate" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">Toate</SelectItem>
+                {uniqueSymbols.map(symbol => (
+                  <SelectItem key={symbol} value={symbol}>{symbol}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Date Range Filters */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">De la:</span>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn("w-32 justify-start text-left font-normal text-xs", !fromDate && "text-muted-foreground")}
+                >
+                  <CalendarIcon className="mr-2 h-3 w-3" />
+                  {fromDate ? format(fromDate, "dd/MM/yyyy") : "Selectează"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={fromDate}
+                  onSelect={setFromDate}
+                  initialFocus
+                  className={cn("p-3 pointer-events-auto")}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">Până la:</span>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn("w-32 justify-start text-left font-normal text-xs", !toDate && "text-muted-foreground")}
+                >
+                  <CalendarIcon className="mr-2 h-3 w-3" />
+                  {toDate ? format(toDate, "dd/MM/yyyy") : "Selectează"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={toDate}
+                  onSelect={setToDate}
+                  initialFocus
+                  className={cn("p-3 pointer-events-auto")}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          {/* Clear Filters */}
+          {hasActiveFilters && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={clearFilters}
+              className="text-xs gap-1"
+            >
+              <X className="h-3 w-3" />
+              Șterge filtrele
+            </Button>
+          )}
+        </div>
+
+        {/* Action Filters */}
+        <div className="flex gap-2 flex-wrap">
+          {filters.map(f => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors duration-150 ${
+                filter === f ? "bg-accent text-accent-foreground" : "bg-secondary text-muted-foreground hover:bg-card-hover"
+              }`}
+            >
+              {f} <span className="ml-1 opacity-70">{counts[f]}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
-      {filtered.length === 0 ? (
+      {filteredSignals.length === 0 ? (
         <div className="bg-card border border-border-subtle rounded-xl p-12 text-center">
-          <p className="text-muted-foreground">No signals match this filter</p>
+          <p className="text-muted-foreground">Nu există semnale care să corespundă filtrelor</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {filtered.map((s: any) => (
+          {filteredSignals.map((s: any) => (
             <SignalCard key={s.id} signal={s} />
           ))}
         </div>
