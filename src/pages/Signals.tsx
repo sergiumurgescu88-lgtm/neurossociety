@@ -1,6 +1,13 @@
 import { useState } from "react";
+import { format } from "date-fns";
 import { formatCurrencyPlain, timeAgo } from "@/lib/format";
 import useAiSignals, { type AiSignal } from "@/hooks/useAiSignals";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { CalendarIcon, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface SignalsPageProps {
   signals: any[];
