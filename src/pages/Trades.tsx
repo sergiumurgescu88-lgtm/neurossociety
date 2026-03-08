@@ -65,22 +65,27 @@ export default function TradesPage({ trades, loading }: TradesPageProps) {
     <div className="space-y-6">
       {/* Financial Summary */}
       <div className="bg-card border border-border-subtle rounded-xl p-5 shadow-lg shadow-black/20">
-        <h3 className="font-heading text-sm font-semibold mb-3">Sumar Financiar <span className="text-[9px] text-accent/60 font-normal">(calculat din trade-uri)</span></h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        <h3 className="font-heading text-sm font-semibold mb-3">Sumar Financiar</h3>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div>
-            <p className="text-xs text-muted-foreground mb-1">Total Investit (BUY)</p>
+            <p className="text-xs text-muted-foreground mb-1">Volum BUY</p>
             <p className="font-mono text-lg font-semibold">{formatCurrency(totalInvested)}</p>
-            <p className="text-[10px] text-muted-foreground">{buyTrades.length} tranzacții</p>
+            <p className="text-[10px] text-muted-foreground">{buyTrades.length} ordine</p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground mb-1">Total Returnat (SELL)</p>
+            <p className="text-xs text-muted-foreground mb-1">Volum SELL</p>
             <p className="font-mono text-lg font-semibold">{formatCurrency(totalReturned)}</p>
-            <p className="text-[10px] text-muted-foreground">{sellTrades.length} tranzacții</p>
+            <p className="text-[10px] text-muted-foreground">{sellTrades.length} ordine</p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground mb-1">Balanță Netă</p>
-            <p className={`font-mono text-lg font-semibold ${netBalance >= 0 ? "text-accent" : "text-danger"}`}>{formatCurrency(netBalance)}</p>
-            <p className="text-[10px] text-muted-foreground">returnat − investit</p>
+            <p className="text-xs text-muted-foreground mb-1">Realized P&L</p>
+            <p className={`font-mono text-lg font-semibold ${totalPl >= 0 ? "text-accent" : "text-danger"}`}>{formatCurrency(totalPl)}</p>
+            <p className="text-[10px] text-muted-foreground">din SELL-uri închise</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground mb-1">Volum Total</p>
+            <p className="font-mono text-lg font-semibold">{formatCurrency(totalInvested + totalReturned)}</p>
+            <p className="text-[10px] text-muted-foreground">{trades.length} tranzacții</p>
           </div>
         </div>
       </div>
