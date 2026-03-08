@@ -26,13 +26,25 @@ export default function Dashboard({ portfolio, positions, signals, trades, logs,
     );
   }
 
-  const equity = portfolio?.equity ?? 0;
-  const pnl = portfolio?.pnl ?? 0;
-  const pnlPct = portfolio?.pnl_pct ?? 0;
-  const cash = portfolio?.cash ?? 0;
+  // --- Local cash/equity calculation from trade history ---
+  const STARTING_CAPITAL = 100000;
+  const buyTotal = trades.filter((t: any) => t.action === "BUY").reduce((s: number, t: any) => s + (t.value || (t.qty ?? 0) * (t.price ?? 0)), 0);
+  const sellTotal = trades.filter((t: any) => t.action === "SELL").reduce((s: number, t: any) => s + (t.value || (t.qty ?? 0) * (t.price ?? 0)), 0);
+  const realizedPl = trades.filter((t: any) => t.action === "SELL").reduce((s: number, t: any) => s + (t.pl ?? 0), 0);
+  const positionsValue = positions.reduce((s: number, p: any) => s + (p.market_value ?? 0), 0);
+  const estimatedCash = STARTING_CAPITAL - buyTotal + sellTotal;
+  const estimatedEquity = estimatedCash + positionsValue;
+  const estimatedPnl = estimatedEquity - STARTING_CAPITAL;
+  const estimatedPnlPct = STARTING_CAPITAL > 0 ? (estimatedPnl / STARTING_CAPITAL) * 100 : 0;
+
+  // Use estimated values (calculated from actual trades) instead of bot-reported snapshot
+  const equity = estimatedEquity;
+  const pnl = estimatedPnl;
+  const pnlPct = estimatedPnlPct;
+  const cash = estimatedCash;
   const cashRatio = equity > 0 ? (cash / equity) * 100 : 0;
-  const totalTrades = portfolio?.total_trades ?? 0;
-  const totalPl = portfolio?.total_pl ?? 0;
+  const totalTrades = trades.length;
+  const totalPl = realizedPl;
 
   const sellTrades = trades.filter((t: any) => t.action === "SELL");
   const wins = sellTrades.filter((t: any) => (t.pl ?? 0) > 0).length;
