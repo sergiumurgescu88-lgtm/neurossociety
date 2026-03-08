@@ -14,7 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      ai_signals: {
+        Row: {
+          action: string
+          confidence: number
+          created_at: string
+          ema_trend: string | null
+          id: string
+          macd: string | null
+          model: string | null
+          reasoning: string | null
+          risk_level: string | null
+          rsi: number | null
+          symbol: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          confidence?: number
+          created_at?: string
+          ema_trend?: string | null
+          id?: string
+          macd?: string | null
+          model?: string | null
+          reasoning?: string | null
+          risk_level?: string | null
+          rsi?: number | null
+          symbol: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          confidence?: number
+          created_at?: string
+          ema_trend?: string | null
+          id?: string
+          macd?: string | null
+          model?: string | null
+          reasoning?: string | null
+          risk_level?: string | null
+          rsi?: number | null
+          symbol?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
