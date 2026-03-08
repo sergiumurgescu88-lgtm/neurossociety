@@ -1,0 +1,4 @@
+project_id = "usgkpmoiuegwjsunihha"
+
+[functions.analyze-signals]
+verify_jwt = false
