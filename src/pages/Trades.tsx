@@ -52,12 +52,34 @@ export default function TradesPage({ trades, loading }: TradesPageProps) {
 
   return (
     <div className="space-y-6">
-      {/* Summary */}
+      {/* Financial Summary */}
+      <div className="bg-card border border-border-subtle rounded-xl p-5 shadow-lg shadow-black/20">
+        <h3 className="font-heading text-sm font-semibold mb-3">Sumar Financiar <span className="text-[9px] text-accent/60 font-normal">(calculat din trade-uri)</span></h3>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div>
+            <p className="text-xs text-muted-foreground mb-1">Total Investit (BUY)</p>
+            <p className="font-mono text-lg font-semibold">{formatCurrency(totalInvested)}</p>
+            <p className="text-[10px] text-muted-foreground">{buyTrades.length} tranzacții</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground mb-1">Total Returnat (SELL)</p>
+            <p className="font-mono text-lg font-semibold">{formatCurrency(totalReturned)}</p>
+            <p className="text-[10px] text-muted-foreground">{sellTrades.length} tranzacții</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground mb-1">Balanță Netă</p>
+            <p className={`font-mono text-lg font-semibold ${netBalance >= 0 ? "text-accent" : "text-danger"}`}>{formatCurrency(netBalance)}</p>
+            <p className="text-[10px] text-muted-foreground">returnat − investit</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
           { label: "Total Trades", value: trades.length.toString() },
           { label: "Win Rate", value: `${winRate.toFixed(1)}%` },
-          { label: "Total P&L", value: formatCurrency(totalPl), color: totalPl >= 0 ? "text-accent" : "text-danger" },
+          { label: "Realized P&L", value: formatCurrency(totalPl), color: totalPl >= 0 ? "text-accent" : "text-danger" },
           { label: "Best Trade", value: formatCurrency(bestTrade), color: "text-accent" },
         ].map(s => (
           <div key={s.label} className="bg-card border border-border-subtle rounded-xl p-4 shadow-lg shadow-black/20">
