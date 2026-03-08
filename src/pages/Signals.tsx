@@ -43,11 +43,12 @@ export default function SignalsPage({ signals, loading }: SignalsPageProps) {
     );
   }
 
+  const allSignals = signals;
   const filters = ["ALL", "BUY", "SELL", "HOLD"];
-  const counts: Record<string, number> = { ALL: signals.length };
-  filters.slice(1).forEach(f => { counts[f] = signals.filter(s => s.action === f).length; });
+  const counts: Record<string, number> = { ALL: allSignals.length };
+  filters.slice(1).forEach(f => { counts[f] = allSignals.filter(s => s.action === f).length; });
 
-  const filtered = filter === "ALL" ? signals : signals.filter(s => s.action === filter);
+  const filtered = filter === "ALL" ? allSignals : allSignals.filter(s => s.action === filter);
 
   const avgConfidence = signals.length > 0
     ? (signals.reduce((sum, s) => sum + (s.confidence ?? 0), 0) / signals.length).toFixed(1)
