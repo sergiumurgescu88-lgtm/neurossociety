@@ -105,6 +105,119 @@ export default function TradesPage({ trades, loading }: TradesPageProps) {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="font-heading text-xl font-bold">Tranzacții</h1>
+        <p className="text-sm text-muted-foreground">Istoric complet al tranzacțiilor și analize</p>
+      </div>
+
+      {/* Filters */}
+      <div className="space-y-4">
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Symbol Filter */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">Simbol:</span>
+            <Select value={symbolFilter} onValueChange={setSymbolFilter}>
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder="Toate" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">Toate</SelectItem>
+                {uniqueSymbols.map(symbol => (
+                  <SelectItem key={symbol} value={symbol}>{symbol}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Type Filter */}
+          {uniqueTypes.length > 0 && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">Tip:</span>
+              <Select value={typeFilter} onValueChange={setTypeFilter}>
+                <SelectTrigger className="w-32">
+                  <SelectValue placeholder="Toate" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">Toate</SelectItem>
+                  {uniqueTypes.map(type => (
+                    <SelectItem key={type} value={type}>{type}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {/* Date Range Filters */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">De la:</span>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn("w-32 justify-start text-left font-normal text-xs", !fromDate && "text-muted-foreground")}
+                >
+                  <CalendarIcon className="mr-2 h-3 w-3" />
+                  {fromDate ? format(fromDate, "dd/MM/yyyy") : "Selectează"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={fromDate}
+                  onSelect={setFromDate}
+                  initialFocus
+                  className={cn("p-3 pointer-events-auto")}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">Până la:</span>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn("w-32 justify-start text-left font-normal text-xs", !toDate && "text-muted-foreground")}
+                >
+                  <CalendarIcon className="mr-2 h-3 w-3" />
+                  {toDate ? format(toDate, "dd/MM/yyyy") : "Selectează"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={toDate}
+                  onSelect={setToDate}
+                  initialFocus
+                  className={cn("p-3 pointer-events-auto")}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          {/* Clear Filters */}
+          {hasActiveFilters && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={clearFilters}
+              className="text-xs gap-1"
+            >
+              <X className="h-3 w-3" />
+              Șterge filtrele
+            </Button>
+          )}
+        </div>
+
+        {/* Filter Summary */}
+        {hasActiveFilters && (
+          <div className="text-xs text-muted-foreground">
+            Afișând {filteredTrades.length} din {trades.length} tranzacții
+          </div>
+        )}
+      </div>
       {/* Financial Summary */}
       <div className="bg-card border border-border-subtle rounded-xl p-5 shadow-lg shadow-black/20">
         <h3 className="font-heading text-sm font-semibold mb-3">Sumar Financiar</h3>
