@@ -240,7 +240,7 @@ export default function TradesPage({ trades, loading }: TradesPageProps) {
           <div>
             <p className="text-xs text-muted-foreground mb-1">Volum Total</p>
             <p className="font-mono text-lg font-semibold">{formatCurrency(totalInvested + totalReturned)}</p>
-            <p className="text-[10px] text-muted-foreground">{trades.length} tranzacții</p>
+            <p className="text-[10px] text-muted-foreground">{filteredTrades.length} tranzacții</p>
           </div>
         </div>
       </div>
