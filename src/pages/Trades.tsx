@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { formatCurrencyPlain, formatCurrency } from "@/lib/format";
 import { format } from "date-fns";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from "recharts";
 
 interface TradesPageProps {
   trades: any[];
