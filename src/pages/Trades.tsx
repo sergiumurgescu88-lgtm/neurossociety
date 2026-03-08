@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { formatCurrencyPlain, formatCurrency } from "@/lib/format";
 import { format } from "date-fns";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from "recharts";
 
 interface TradesPageProps {
   trades: any[];
@@ -33,6 +33,17 @@ export default function TradesPage({ trades, loading }: TradesPageProps) {
   const winRate = sellTrades.length > 0 ? (wins / sellTrades.length * 100) : 0;
   const totalPl = sellTrades.reduce((s, t) => s + (t.pl ?? 0), 0);
   const bestTrade = sellTrades.length > 0 ? Math.max(...sellTrades.map(t => t.pl ?? 0)) : 0;
+
+  // Pie chart data - investment distribution by symbol
+  const PIE_COLORS = ["hsl(160,84%,39%)", "hsl(217,91%,60%)", "hsl(280,65%,60%)", "hsl(38,92%,50%)", "hsl(0,84%,60%)", "hsl(190,80%,45%)", "hsl(330,70%,55%)", "hsl(120,60%,40%)", "hsl(50,90%,55%)", "hsl(260,50%,65%)"];
+  const symbolMap = new Map<string, number>();
+  buyTrades.forEach(t => {
+    const val = t.value || (t.qty ?? 0) * (t.price ?? 0);
+    symbolMap.set(t.symbol, (symbolMap.get(t.symbol) ?? 0) + val);
+  });
+  const pieData = [...symbolMap.entries()]
+    .map(([name, value]) => ({ name, value: Math.round(value * 100) / 100 }))
+    .sort((a, b) => b.value - a.value);
 
   // P&L chart data - last 10 sell trades
   const plChartData = [...sellTrades]
@@ -74,7 +85,48 @@ export default function TradesPage({ trades, loading }: TradesPageProps) {
         </div>
       </div>
 
-      {/* Quick Stats */}
+      {/* Pie Chart - Distribution by Symbol */}
+      {pieData.length > 0 && (
+        <div className="bg-card border border-border-subtle rounded-xl p-5 shadow-lg shadow-black/20">
+          <h3 className="font-heading text-sm font-semibold mb-3">Distribuție Investiții pe Simbol</h3>
+          <div className="flex flex-col lg:flex-row items-center gap-4">
+            <ResponsiveContainer width="100%" height={220} className="max-w-[280px]">
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={50}
+                  outerRadius={90}
+                  paddingAngle={2}
+                  strokeWidth={0}
+                >
+                  {pieData.map((_, idx) => (
+                    <Cell key={idx} fill={PIE_COLORS[idx % PIE_COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{ background: "hsl(217,33%,11%)", border: "1px solid hsl(215,19%,17%)", borderRadius: 8, fontSize: 12 }}
+                  formatter={(v: number) => [formatCurrency(v), "Investit"]}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs">
+              {pieData.map((d, idx) => (
+                <div key={d.name} className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: PIE_COLORS[idx % PIE_COLORS.length] }} />
+                  <span className="font-heading font-semibold">{d.name}</span>
+                  <span className="text-muted-foreground font-mono">{formatCurrency(d.value)}</span>
+                  <span className="text-muted-foreground/60">({((d.value / totalInvested) * 100).toFixed(1)}%)</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
           { label: "Total Trades", value: trades.length.toString() },
