@@ -24,7 +24,11 @@ export default function TradesPage({ trades, loading }: TradesPageProps) {
   const totalPages = Math.ceil(sorted.length / perPage);
   const paged = sorted.slice(page * perPage, (page + 1) * perPage);
 
+  const buyTrades = trades.filter(t => t.action === "BUY");
   const sellTrades = trades.filter(t => t.action === "SELL");
+  const totalInvested = buyTrades.reduce((s, t) => s + (t.value || (t.qty ?? 0) * (t.price ?? 0)), 0);
+  const totalReturned = sellTrades.reduce((s, t) => s + (t.value || (t.qty ?? 0) * (t.price ?? 0)), 0);
+  const netBalance = totalReturned - totalInvested;
   const wins = sellTrades.filter(t => (t.pl ?? 0) > 0).length;
   const winRate = sellTrades.length > 0 ? (wins / sellTrades.length * 100) : 0;
   const totalPl = sellTrades.reduce((s, t) => s + (t.pl ?? 0), 0);
