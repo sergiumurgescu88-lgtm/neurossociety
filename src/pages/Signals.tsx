@@ -50,8 +50,8 @@ export default function SignalsPage({ signals, loading }: SignalsPageProps) {
 
   const filtered = filter === "ALL" ? allSignals : allSignals.filter(s => s.action === filter);
 
-  const avgConfidence = signals.length > 0
-    ? (signals.reduce((sum, s) => sum + (s.confidence ?? 0), 0) / signals.length).toFixed(1)
+  const avgConfidence = allSignals.length > 0
+    ? (allSignals.reduce((sum, s) => sum + (s.confidence ?? 0), 0) / allSignals.length).toFixed(1)
     : "0.0";
 
   return (
