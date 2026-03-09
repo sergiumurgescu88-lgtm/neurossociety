@@ -10,12 +10,13 @@ interface SidebarProps {
 }
 
 const navItems = [
+  { path: "/live-trading", label: "Live Trading", emoji: "📺", isLive: true },
   { path: "/dashboard", label: "Dashboard", emoji: "📊" },
   { path: "/positions", label: "Positions", emoji: "📈" },
   { path: "/signals", label: "AI Signals", emoji: "🤖" },
   { path: "/trades", label: "Trade History", emoji: "📋" },
   { path: "/settings", label: "Settings", emoji: "⚙️" },
-];
+] as const;
 
 export default function AppSidebar({ portfolio, userEmail, onSignOut }: SidebarProps) {
   const location = useLocation();
@@ -44,18 +45,29 @@ export default function AppSidebar({ portfolio, userEmail, onSignOut }: SidebarP
       <nav className="flex-1 p-4 space-y-1">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
+          const isLive = 'isLive' in item && item.isLive;
           return (
             <NavLink
               key={item.path}
               to={item.path}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-body transition-colors duration-150 ${
-                isActive
-                  ? "bg-accent-dim text-accent border-l-[3px] border-accent"
-                  : "text-muted-foreground hover:bg-card-hover hover:text-foreground"
+                isLive
+                  ? isActive
+                    ? "bg-accent/20 text-accent border-l-[3px] border-accent shadow-[0_0_12px_hsl(var(--accent)/0.3)]"
+                    : "text-accent hover:bg-accent/10 hover:shadow-[0_0_12px_hsl(var(--accent)/0.2)]"
+                  : isActive
+                    ? "bg-accent-dim text-accent border-l-[3px] border-accent"
+                    : "text-muted-foreground hover:bg-card-hover hover:text-foreground"
               }`}
             >
+              {isLive && (
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
+                </span>
+              )}
               <span className="text-base">{item.emoji}</span>
-              <span className="font-medium">{item.label}</span>
+              <span className={`font-medium ${isLive ? 'animate-pulse' : ''}`}>{item.label}</span>
             </NavLink>
           );
         })}
