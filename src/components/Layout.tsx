@@ -22,6 +22,7 @@ const pageTitles: Record<string, string> = {
   "/positions": "Positions",
   "/signals": "AI Signals",
   "/trades": "Trade History",
+  "/live-trading": "Live Trading",
   "/settings": "Settings",
 };
 
@@ -30,6 +31,7 @@ const navItems = [
   { path: "/positions", label: "Positions", emoji: "📈" },
   { path: "/signals", label: "AI Signals", emoji: "🤖" },
   { path: "/trades", label: "Trade History", emoji: "📋" },
+  { path: "/live-trading", label: "Live Trading", emoji: "📺" },
   { path: "/settings", label: "Settings", emoji: "⚙️" },
 ];
 
