@@ -10,12 +10,13 @@ interface SidebarProps {
 }
 
 const navItems = [
+  { path: "/live-trading", label: "Live Trading", emoji: "📺", isLive: true },
   { path: "/dashboard", label: "Dashboard", emoji: "📊" },
   { path: "/positions", label: "Positions", emoji: "📈" },
   { path: "/signals", label: "AI Signals", emoji: "🤖" },
   { path: "/trades", label: "Trade History", emoji: "📋" },
   { path: "/settings", label: "Settings", emoji: "⚙️" },
-];
+] as const;
 
 export default function AppSidebar({ portfolio, userEmail, onSignOut }: SidebarProps) {
   const location = useLocation();
