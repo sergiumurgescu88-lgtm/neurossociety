@@ -23,6 +23,7 @@ const pageTitles: Record<string, string> = {
   "/signals": "AI Signals",
   "/trades": "Trade History",
   "/live-trading": "Live Trading",
+  "/reports": "Rapoarte",
   "/settings": "Settings",
 };
 
