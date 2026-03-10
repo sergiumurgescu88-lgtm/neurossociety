@@ -28,11 +28,12 @@ const pageTitles: Record<string, string> = {
 };
 
 const navItems = [
+  { path: "/live-trading", label: "Live Trading", emoji: "📺" },
   { path: "/dashboard", label: "Dashboard", emoji: "📊" },
   { path: "/positions", label: "Positions", emoji: "📈" },
   { path: "/signals", label: "AI Signals", emoji: "🤖" },
   { path: "/trades", label: "Trade History", emoji: "📋" },
-  { path: "/live-trading", label: "Live Trading", emoji: "📺" },
+  { path: "/reports", label: "Rapoarte", emoji: "🗂" },
   { path: "/settings", label: "Settings", emoji: "⚙️" },
 ];
 
