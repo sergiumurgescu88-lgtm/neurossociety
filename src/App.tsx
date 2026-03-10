@@ -117,6 +117,7 @@ function AppRoutes() {
       <Route path="/trades" element={<DashboardShell><TradesContent /></DashboardShell>} />
       <Route path="/live-trading" element={<DashboardShell><LiveTradingContent /></DashboardShell>} />
       <Route path="/settings" element={protect(<SettingsPage />)} />
+      <Route path="/reports" element={<DashboardShell><ReportsPage /></DashboardShell>} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
