@@ -16,6 +16,7 @@ import SignalsPage from "@/pages/Signals";
 import TradesPage from "@/pages/Trades";
 import LiveTrading from "@/pages/LiveTrading";
 import SettingsPage from "@/pages/Settings";
+import ReportsPage from "@/pages/Reports";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
