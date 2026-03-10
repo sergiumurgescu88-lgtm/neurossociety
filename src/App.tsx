@@ -16,6 +16,7 @@ import SignalsPage from "@/pages/Signals";
 import TradesPage from "@/pages/Trades";
 import LiveTrading from "@/pages/LiveTrading";
 import SettingsPage from "@/pages/Settings";
+import ReportsPage from "@/pages/Reports";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -116,6 +117,7 @@ function AppRoutes() {
       <Route path="/trades" element={<DashboardShell><TradesContent /></DashboardShell>} />
       <Route path="/live-trading" element={<DashboardShell><LiveTradingContent /></DashboardShell>} />
       <Route path="/settings" element={protect(<SettingsPage />)} />
+      <Route path="/reports" element={<DashboardShell><ReportsPage /></DashboardShell>} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

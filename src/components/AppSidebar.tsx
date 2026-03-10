@@ -15,6 +15,7 @@ const navItems = [
   { path: "/positions", label: "Positions", emoji: "📈" },
   { path: "/signals", label: "AI Signals", emoji: "🤖" },
   { path: "/trades", label: "Trade History", emoji: "📋" },
+  { path: "/reports", label: "Rapoarte", emoji: "🗂" },
   { path: "/settings", label: "Settings", emoji: "⚙️" },
 ] as const;
 
