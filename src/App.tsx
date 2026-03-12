@@ -18,6 +18,9 @@ import LiveTrading from "@/pages/LiveTrading";
 import SettingsPage from "@/pages/Settings";
 import ReportsPage from "@/pages/Reports";
 import NotFound from "./pages/NotFound";
+import BotV1 from "@/pages/BotV1";
+import BotV2 from "@/pages/BotV2";
+import BotV3 from "@/pages/BotV3";
 
 const queryClient = new QueryClient();
 
@@ -118,6 +121,9 @@ function AppRoutes() {
       <Route path="/live-trading" element={<DashboardShell><LiveTradingContent /></DashboardShell>} />
       <Route path="/settings" element={protect(<SettingsPage />)} />
       <Route path="/reports" element={<DashboardShell><ReportsPage /></DashboardShell>} />
+      <Route path="/bot-v1" element={<DashboardShell><BotV1 /></DashboardShell>} />
+      <Route path="/bot-v2" element={<DashboardShell><BotV2 /></DashboardShell>} />
+      <Route path="/bot-v3" element={<DashboardShell><BotV3 /></DashboardShell>} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

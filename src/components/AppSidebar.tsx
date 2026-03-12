@@ -16,6 +16,9 @@ const navItems = [
   { path: "/signals", label: "AI Signals", emoji: "🤖" },
   { path: "/trades", label: "Trade History", emoji: "📋" },
   { path: "/reports", label: "Rapoarte", emoji: "🗂" },
+  { path: "/bot-v1", label: "Bot v1.0", emoji: "🤖" },
+  { path: "/bot-v2", label: "Bot v2.0", emoji: "⚡" },
+  { path: "/bot-v3", label: "Bot v3.0", emoji: "🚀" },
   { path: "/settings", label: "Settings", emoji: "⚙️" },
 ] as const;
 

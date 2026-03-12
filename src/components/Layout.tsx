@@ -24,6 +24,9 @@ const pageTitles: Record<string, string> = {
   "/trades": "Trade History",
   "/live-trading": "Live Trading",
   "/reports": "Rapoarte",
+  "/bot-v1": "Bot v1.0 — News Sentiment",
+  "/bot-v2": "Bot v2.0 — Technical Analysis",
+  "/bot-v3": "Bot v3.0 — Full Stack",
   "/settings": "Settings",
 };
 
@@ -34,6 +37,9 @@ const navItems = [
   { path: "/signals", label: "AI Signals", emoji: "🤖" },
   { path: "/trades", label: "Trade History", emoji: "📋" },
   { path: "/reports", label: "Rapoarte", emoji: "🗂" },
+  { path: "/bot-v1", label: "Bot v1.0", emoji: "🤖" },
+  { path: "/bot-v2", label: "Bot v2.0", emoji: "⚡" },
+  { path: "/bot-v3", label: "Bot v3.0", emoji: "🚀" },
   { path: "/settings", label: "Settings", emoji: "⚙️" },
 ];
 
