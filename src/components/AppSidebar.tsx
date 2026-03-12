@@ -10,17 +10,60 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { path: "/live-trading", label: "Live Trading", emoji: "📺", isLive: true },
+  { path: "/live-trading", label: "Live Trading", emoji: "📺", isLive: true, liveColor: "accent" },
+  { path: "/bot-v1", label: "Bot v1.0", emoji: "🤖", isLive: true, liveColor: "purple" },
+  { path: "/bot-v2", label: "Bot v2.0", emoji: "⚡", isLive: true, liveColor: "warning" },
+  { path: "/bot-v3", label: "Bot v3.0", emoji: "🚀", isLive: true, liveColor: "cyan" },
   { path: "/dashboard", label: "Dashboard", emoji: "📊" },
   { path: "/positions", label: "Positions", emoji: "📈" },
   { path: "/signals", label: "AI Signals", emoji: "🤖" },
   { path: "/trades", label: "Trade History", emoji: "📋" },
   { path: "/reports", label: "Rapoarte", emoji: "🗂" },
-  { path: "/bot-v1", label: "Bot v1.0", emoji: "🤖" },
-  { path: "/bot-v2", label: "Bot v2.0", emoji: "⚡" },
-  { path: "/bot-v3", label: "Bot v3.0", emoji: "🚀" },
   { path: "/settings", label: "Settings", emoji: "⚙️" },
 ] as const;
+
+const liveColors: Record<string, { dot: string; activeBg: string; activeBorder: string; activeText: string; activeGlow: string; inactiveText: string; hoverBg: string; hoverGlow: string }> = {
+  accent: {
+    dot: "bg-accent",
+    activeBg: "bg-accent/20",
+    activeBorder: "border-accent",
+    activeText: "text-accent",
+    activeGlow: "shadow-[0_0_12px_hsl(160_84%_39%/0.3)]",
+    inactiveText: "text-accent",
+    hoverBg: "hover:bg-accent/10",
+    hoverGlow: "hover:shadow-[0_0_12px_hsl(160_84%_39%/0.2)]",
+  },
+  purple: {
+    dot: "bg-purple-400",
+    activeBg: "bg-purple-500/20",
+    activeBorder: "border-purple-400",
+    activeText: "text-purple-400",
+    activeGlow: "shadow-[0_0_12px_rgba(192,132,252,0.3)]",
+    inactiveText: "text-purple-400",
+    hoverBg: "hover:bg-purple-500/10",
+    hoverGlow: "hover:shadow-[0_0_12px_rgba(192,132,252,0.2)]",
+  },
+  warning: {
+    dot: "bg-warning",
+    activeBg: "bg-warning/20",
+    activeBorder: "border-warning",
+    activeText: "text-warning",
+    activeGlow: "shadow-[0_0_12px_hsl(38_92%_50%/0.3)]",
+    inactiveText: "text-warning",
+    hoverBg: "hover:bg-warning/10",
+    hoverGlow: "hover:shadow-[0_0_12px_hsl(38_92%_50%/0.2)]",
+  },
+  cyan: {
+    dot: "bg-cyan-400",
+    activeBg: "bg-cyan-500/20",
+    activeBorder: "border-cyan-400",
+    activeText: "text-cyan-400",
+    activeGlow: "shadow-[0_0_12px_rgba(34,211,238,0.3)]",
+    inactiveText: "text-cyan-400",
+    hoverBg: "hover:bg-cyan-500/10",
+    hoverGlow: "hover:shadow-[0_0_12px_rgba(34,211,238,0.2)]",
+  },
+};
 
 export default function AppSidebar({ portfolio, userEmail, onSignOut }: SidebarProps) {
   const location = useLocation();
@@ -50,24 +93,26 @@ export default function AppSidebar({ portfolio, userEmail, onSignOut }: SidebarP
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
           const isLive = 'isLive' in item && item.isLive;
+          const color = isLive && 'liveColor' in item ? liveColors[item.liveColor] : null;
+
           return (
             <NavLink
               key={item.path}
               to={item.path}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-body transition-colors duration-150 ${
-                isLive
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-body transition-all duration-150 ${
+                isLive && color
                   ? isActive
-                    ? "bg-accent/20 text-accent border-l-[3px] border-accent shadow-[0_0_12px_hsl(var(--accent)/0.3)]"
-                    : "text-accent hover:bg-accent/10 hover:shadow-[0_0_12px_hsl(var(--accent)/0.2)]"
+                    ? `${color.activeBg} ${color.activeText} border-l-[3px] ${color.activeBorder} ${color.activeGlow}`
+                    : `${color.inactiveText} ${color.hoverBg} ${color.hoverGlow}`
                   : isActive
                     ? "bg-accent-dim text-accent border-l-[3px] border-accent"
                     : "text-muted-foreground hover:bg-card-hover hover:text-foreground"
               }`}
             >
-              {isLive && (
+              {isLive && color && (
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
+                  <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${color.dot} opacity-75`} />
+                  <span className={`relative inline-flex rounded-full h-2 w-2 ${color.dot}`} />
                 </span>
               )}
               <span className="text-base">{item.emoji}</span>
