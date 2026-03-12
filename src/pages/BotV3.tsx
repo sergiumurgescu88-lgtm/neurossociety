@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { formatCurrency, formatCurrencyPlain, formatPercent } from "@/lib/format";
 
 // Bot V3 — uses NeuroTrade V5 Supabase (bcrzyyqrlaflejovzrcf)
-const SB_URL = "https://bcrzyyqrlaflejovzrcf.supabase.co";
-const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjcnp5eXFybGFmbGVqb3Z6cmNmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzIyNzU2NiwiZXhwIjoyMDg4ODAzNTY2fQ.4op8M21JGWE-T0X1Oj1r-3d_RaaFnfkHi9vvCsdDeaU";
+const SB_URL = "https://zawhuoshdefyznqmjphh.supabase.co";
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inphd2h1b3NoZGVmeXpucW1qcGhoIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzMyNDU3NywiZXhwIjoyMDg4OTAwNTc3fQ.WK6J0-FIBndW1nb-XgS60bunFxwQFN2K3kzQ7E9X0g4";
 
 async function fetchTable<T>(table: string, order?: string, limit?: number): Promise<T[]> {
   let url = `${SB_URL}/rest/v1/${table}?select=*`;
