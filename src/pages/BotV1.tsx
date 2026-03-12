@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { formatCurrency, formatCurrencyPlain, formatPercent } from "@/lib/format";
 
 // Bot V1 uses its own Supabase (same as current dashboard — legacy data)
-const SB_URL = "https://zawhuoshdefyznqmjphh.supabase.co";
-const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inphd2h1b3NoZGVmeXpucW1qcGhoIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzMyNDU3NywiZXhwIjoyMDg4OTAwNTc3fQ.WK6J0-FIBndW1nb-XgS60bunFxwQFN2K3kzQ7E9X0g4";
+const SB_URL = "https://lgrllhsfgvnngtmlwwug.supabase.co";
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxncmxsaHNmZ3Zubmd0bWx3d3VnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MTU5NTM4NiwiZXhwIjoyMDg3MTcxMzg2fQ.zXnxQ9C6xuOWibkmXRcVelUKmuQNqNxFvv4d7bp2ZHw";
 
 async function fetchTable<T>(table: string, order?: string, limit?: number): Promise<T[]> {
   let url = `${SB_URL}/rest/v1/${table}?select=*`;
