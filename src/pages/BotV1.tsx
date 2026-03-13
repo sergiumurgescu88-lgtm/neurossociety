@@ -21,7 +21,7 @@ const STEPS = [
   { emoji: "🧠", title: "Analiză Gemini AI", desc: "Titlurile sunt trimise la Google Gemini 2.0 Flash care calculează un scor de sentiment (0–100) și un reasoning detaliat per simbol." },
   { emoji: "📊", title: "Filtre tehnice", desc: "RSI calculat din bare de 1H. Dacă RSI > 65 → skip buy. Dacă RSI < 35 → semnal potențial. MACD și EMA confirmă direcția." },
   { emoji: "⚡", title: "Execuție automată", desc: "Dacă confidence ≥ 55% și RSI în interval → ordin plasat automat pe Alpaca Paper Trading fără confirmare umană." },
-  { emoji: "🛡️", title: "Risk management", desc: "Stop Loss la -5%, Take Profit la +12%. Max 10 poziții simultane. Max pierdere zilnică 5% din equity." },
+  { emoji: "🛡️", title: "Risk management", desc: "Stop Loss la -5%, Take Profit la +12%. Max 20 poziții simultane. Max pierdere zilnică 5% din equity." },
   { emoji: "📲", title: "Notificări Telegram", desc: "Fiecare trade, semnal și eroare trimisă instant pe Telegram." },
 ];
 
@@ -34,7 +34,7 @@ const SPECS = [
   { label: "Confidence prag", value: "≥ 55%" },
   { label: "Stop Loss", value: "-5%" },
   { label: "Take Profit", value: "+12%" },
-  { label: "Max poziții", value: "10" },
+  { label: "Max poziții", value: "20" },
   { label: "Broker", value: "Alpaca Paper" },
 ];
 
@@ -127,7 +127,7 @@ export default function BotV1() {
             label: "Equity", val: equity > 0 ? formatCurrencyPlain(equity) : "—",
             sub: <span className={`text-sm font-mono mt-1 ${pnl >= 0 ? "text-accent" : "text-danger"}`}>{pnl >= 0 ? "↑" : "↓"} {formatCurrency(pnl)} ({formatPercent(pnlPct)})</span>
           },
-          { label: "Poziții deschise", val: `${openPos}`, sup: "/10", sub: <span className="text-xs text-muted-foreground">max 20 simultane</span> },
+          { label: "Poziții deschise", val: `${openPos}`, sup: "/20", sub: <span className="text-xs text-muted-foreground">max 20 simultane</span> },
           { label: "Total Trades", val: String(totalTrades), sub: <span className="text-xs text-muted-foreground">{wins}W · {losses}L</span> },
           {
             label: "Win Rate",
