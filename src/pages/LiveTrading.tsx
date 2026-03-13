@@ -135,7 +135,7 @@ function LiveTab({ data, cfg, loading }: { data: BotData; cfg: typeof BOT_CONFIG
   return (
     <div className="space-y-6">
       {safeMode && <div className="p-3 bg-yellow-500/5 border border-yellow-500/20 rounded-xl flex items-center gap-2"><span>⚠️</span><span className="text-yellow-400 text-sm font-body">SAFE MODE ACTIV — VIX ridicat, botul nu plasează ordine noi.</span></div>}
-      {cfg.status === "deprecated" && <div className="p-3 bg-yellow-500/5 border border-yellow-500/20 rounded-xl"><p className="text-yellow-400 text-sm font-body">⏸ Bot oprit — versiune deprecată. Datele istorice sunt disponibile în tab-urile Trades, Rezultate și Strategie.</p></div>}
+      {(cfg as any).status === "deprecated" && <div className="p-3 bg-yellow-500/5 border border-yellow-500/20 rounded-xl"><p className="text-yellow-400 text-sm font-body">⏸ Bot oprit — versiune deprecată. Datele istorice sunt disponibile în tab-urile Trades, Rezultate și Strategie.</p></div>}
 
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
         <KPI label="Equity" value={eq > 0 ? formatCurrencyPlain(eq) : "—"} sub={`${pnl >= 0 ? "↑" : "↓"} ${formatCurrency(pnl)} (${pnlPct >= 0 ? "+" : ""}${pnlPct.toFixed(2)}%)`} color={pnl >= 0 ? "text-accent" : "text-danger"} />
@@ -252,7 +252,7 @@ function RezultateTab({ data, loading }: { data: BotData; loading: boolean }) {
     acc[t.symbol].pl += t.pl ?? 0;
     return acc;
   }, {});
-  const sortedSymbols = Object.entries(bySymbol).sort((a, b) => b[1].pl - a[1].pl);
+  const sortedSymbols = Object.entries(bySymbol).sort((a, b) => (b[1] as any).pl - (a[1] as any).pl) as [string, { wins: number; losses: number; pl: number }][];
 
   return (
     <div className="space-y-6">

@@ -98,7 +98,7 @@ function TradesContent() {
 
 function LiveTradingContent() {
   const data = useSharedData();
-  return <LiveTrading loading={data.loading} />;
+  return <LiveTrading />;
 }
 
 function AppRoutes() {
