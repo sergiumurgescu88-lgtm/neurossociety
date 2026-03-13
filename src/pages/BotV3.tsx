@@ -175,7 +175,7 @@ export default function BotV3() {
           },
           {
             label: "Poziții deschise",
-            val: String(openPos), sup: "/15",
+            val: String(openPos), sup: "/20",
             sub: <span className="text-xs text-muted-foreground">{totalTrades} total trades</span>
           },
           {
